@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>효원(曉原) 미식회 - 메인</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap');
+        
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #050a12;
+            color: #e2e8f0;
+            overflow-x: hidden;
+        }
+
+        .gold-gradient {
+            background: linear-gradient(135deg, #c5a059 0%, #f3d38c 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .gold-border {
+            border: 1px solid rgba(197, 160, 89, 0.3);
+        }
+
+        .card-hover:hover {
+            transform: translateY(-10px);
+            border-color: rgba(197, 160, 89, 0.6);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), 0 0 20px rgba(197, 160, 89, 0.1);
+        }
+
+        .bg-pattern {
+            background-image: radial-gradient(circle at 2px 2px, rgba(197, 160, 89, 0.05) 1px, transparent 0);
+            background-size: 40px 40px;
+        }
+
+        .glow-effect {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            background: rgba(197, 160, 89, 0.1);
+            filter: blur(100px);
+            border-radius: 50%;
+            z-index: -1;
+        }
+    </style>
+</head>
+<body class="bg-pattern">
+    <div class="glow-effect" style="top: 10%; left: -100px;"></div>
+    <div class="glow-effect" style="bottom: 10%; right: -100px;"></div>
+
+    <div class="min-h-screen flex flex-col items-center justify-center px-6 py-12">
+        <!-- Header Section -->
+        <header class="text-center mb-16 animate-fade-in">
+            <div class="inline-block bg-[#c5a059]/10 text-[#c5a059] px-6 py-2 rounded-full text-sm font-bold tracking-[0.3em] border border-[#c5a059]/30 mb-8 uppercase">
+                EST. 2026 PNU GOURMET
+            </div>
+            <h1 class="text-6xl md:text-8xl font-black mb-6 tracking-tighter">
+                효원<span class="gold-gradient">(曉原)</span> 미식회
+            </h1>
+            <p class="text-slate-400 text-lg md:text-xl font-light max-w-2xl mx-auto leading-relaxed">
+                부산대학교의 낭만과 깊이를 담은<br>
+                엄선된 미식 가이드를 지금 경험해 보세요.
+            </p>
+        </header>
+
+        <!-- Navigation Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-5xl">
+            <!-- Restaurant Link -->
+            <a href="01.html" class="group">
+                <div class="card-hover relative overflow-hidden bg-[#0d1520] rounded-[2.5rem] p-10 gold-border transition-all duration-500 h-[400px] flex flex-col justify-end">
+                    <div class="absolute top-10 right-10 text-[#c5a059] opacity-20 group-hover:opacity-100 transition-opacity duration-500">
+                        <i class="fas fa-utensils text-7xl"></i>
+                    </div>
+                    <div class="relative z-10">
+                        <span class="text-[#c5a059] font-bold tracking-widest text-xs uppercase mb-4 block">Selection 01</span>
+                        <h2 class="text-4xl font-bold text-white mb-4 group-hover:text-[#c5a059] transition-colors">엄선 맛집</h2>
+                        <p class="text-slate-400 font-medium mb-8">
+                            톤쇼우부터 수림식당까지,<br>부산대생이 보증하는 로컬 맛집 리스트 30선.
+                        </p>
+                        <div class="flex items-center gap-2 text-[#c5a059] font-bold">
+                            VIEW LIST <i class="fas fa-arrow-right ml-2 group-hover:translate-x-2 transition-transform"></i>
+                        </div>
+                    </div>
+                    <!-- Decorative Circle -->
+                    <div class="absolute -bottom-10 -left-10 w-40 h-40 bg-[#c5a059]/5 rounded-full blur-2xl group-hover:bg-[#c5a059]/10 transition-colors"></div>
+                </div>
+            </a>
+
+            <!-- Cafe Link -->
+            <a href="02.html" class="group">
+                <div class="card-hover relative overflow-hidden bg-[#0d1520] rounded-[2.5rem] p-10 gold-border transition-all duration-500 h-[400px] flex flex-col justify-end">
+                    <div class="absolute top-10 right-10 text-[#c5a059] opacity-20 group-hover:opacity-100 transition-opacity duration-500">
+                        <i class="fas fa-coffee text-7xl"></i>
+                    </div>
+                    <div class="relative z-10">
+                        <span class="text-[#c5a059] font-bold tracking-widest text-xs uppercase mb-4 block">Selection 02</span>
+                        <h2 class="text-4xl font-bold text-white mb-4 group-hover:text-[#c5a059] transition-colors">감성 카페</h2>
+                        <p class="text-slate-400 font-medium mb-8">
+                            에타리 타르트와 숨겨진 로스터리,<br>대화와 휴식이 있는 특별한 카페 가이드.
+                        </p>
+                        <div class="flex items-center gap-2 text-[#c5a059] font-bold">
+                            EXPLORE <i class="fas fa-arrow-right ml-2 group-hover:translate-x-2 transition-transform"></i>
+                        </div>
+                    </div>
+                    <!-- Decorative Circle -->
+                    <div class="absolute -bottom-10 -left-10 w-40 h-40 bg-[#c5a059]/5 rounded-full blur-2xl group-hover:bg-[#c5a059]/10 transition-colors"></div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Info Footer -->
+        <footer class="mt-24 text-center">
+            <div class="flex items-center justify-center gap-8 mb-8 text-slate-500 text-sm font-bold tracking-widest uppercase">
+                <span class="hover:text-[#c5a059] cursor-pointer transition-colors">About</span>
+                <span class="hover:text-[#c5a059] cursor-pointer transition-colors">Curators</span>
+                <span class="hover:text-[#c5a059] cursor-pointer transition-colors">Contact</span>
+            </div>
+            <p class="text-slate-600 text-xs">© 2026 HYOWON GOURMET. ALL RIGHTS RESERVED.</p>
+        </footer>
+    </div>
+</body>
+</html>
