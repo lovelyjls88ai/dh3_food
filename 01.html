@@ -19,6 +19,15 @@
       -webkit-box-orient: vertical;
       overflow: hidden;
     }
+    
+    /* Smooth transition for modal */
+    .modal-enter {
+      animation: fadeIn 0.3s ease-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
   </style>
 </head>
 
@@ -62,7 +71,7 @@
       { id: 30, name: "모모스테이크", type: "스테이크", rating: 4.0, address: "부산 금정구 부산대학로 38", description: "젓가락으로 먹는 스테이크. 학생들의 꾸준한 사랑.", tags: ["가성비", "간편식"], review: "스테이크를 부담 없는 가격에 먹을 수 있어서 좋아요.", image: "https://images.unsplash.com/photo-1546241072-48010ad28c2c?auto=format&fit=crop&q=80&w=800" }
     ];
 
-    // 평점 내림차순 정렬(React useMemo 대체)
+    // 평점 내림차순 정렬
     const sortedRestaurants = [...restaurantsData].sort((a, b) => b.rating - a.rating);
 
     // -----------------------------
@@ -85,9 +94,20 @@
         .replaceAll("'", "&#039;");
     }
 
-    function handleOpenMap(address) {
-      const query = encodeURIComponent(address);
-      window.open(`https://map.kakao.com/link/search/${query}`, "_blank");
+    /**
+     * 네이버 지도 길찾기로 연동
+     * daddr: 목적지 주소
+     * dname: 목적지 명칭 (선택사항이나 입력하면 더 정확함)
+     */
+    function handleOpenNaverMap(address, name) {
+      const destination = encodeURIComponent(address);
+      const destinationName = encodeURIComponent(name);
+      // 네이버 지도 길찾기 URL (웹 버전)
+      const url = `https://map.naver.com/p/search/${destination}`;
+      // 혹은 상세 길찾기 모드로 바로 진입하고 싶다면 아래 주소 사용
+      // const url = `https://map.naver.com/v5/directions/-/-/${destination},${destinationName},-,ADDRESS_POI/walk`;
+      
+      window.open(url, "_blank");
     }
 
     function matchesSearch(r, q) {
@@ -273,7 +293,7 @@
               <div class="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-8">
                 <div data-action="close-modal" class="absolute inset-0 bg-black/80 backdrop-blur-sm"></div>
 
-                <div class="relative bg-[#0d1520] w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-[2.5rem] border border-[#c5a059]/30 shadow-2xl">
+                <div class="relative bg-[#0d1520] w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-[2.5rem] border border-[#c5a059]/30 shadow-2xl modal-enter">
                   <button
                     data-action="close-modal"
                     class="absolute top-6 right-6 z-10 bg-black/50 p-2 rounded-full text-white hover:bg-[#c5a059] transition-colors"
@@ -310,9 +330,10 @@
                             <button
                               data-action="open-map"
                               data-address="${escapeHtml(selected.address)}"
-                              class="text-[#c5a059] text-xs font-bold flex items-center gap-1 hover:underline"
+                              data-name="${escapeHtml(selected.name)}"
+                              class="text-[#00c73c] text-xs font-bold flex items-center gap-1 hover:underline"
                             >
-                              카카오맵에서 찾아가기
+                              네이버 지도에서 찾아가기
                               <i data-lucide="external-link" style="width:12px;height:12px"></i>
                             </button>
                           </div>
@@ -337,7 +358,7 @@
                             <div class="flex gap-1">
                               ${renderStars(selected.rating)}
                             </div>
-                            <span class="text-xs text-slate-500 font-bold">Verfied Resident Review</span>
+                            <span class="text-xs text-slate-500 font-bold">Verified Resident Review</span>
                           </div>
                         </div>
                       </div>
@@ -387,14 +408,19 @@
       // Lucide 아이콘 렌더
       lucide.createIcons();
 
-      // 검색 input 이벤트 바인딩(렌더 후 다시 잡아야 함)
+      // 검색 input 이벤트 바인딩
       const input = document.getElementById("searchInput");
       if (input) {
         input.addEventListener("input", (e) => {
           state.searchTerm = e.target.value;
-          // 모달이 열려있으면 검색 시에도 유지/닫기 선택 가능.
           render();
         }, { passive: true });
+        
+        // 포커스 유지
+        if (state.searchTerm) {
+          input.focus();
+          input.setSelectionRange(state.searchTerm.length, state.searchTerm.length);
+        }
       }
     }
 
@@ -427,7 +453,8 @@
 
       if (action === "open-map") {
         const address = btn.getAttribute("data-address") || "";
-        handleOpenMap(address);
+        const name = btn.getAttribute("data-name") || "";
+        handleOpenNaverMap(address, name);
         return;
       }
     });
