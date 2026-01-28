@@ -26,6 +26,10 @@
             border: 1px solid rgba(197, 160, 89, 0.3);
         }
 
+        .card-hover {
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
         .card-hover:hover {
             transform: translateY(-10px);
             border-color: rgba(197, 160, 89, 0.6);
@@ -45,6 +49,39 @@
             filter: blur(100px);
             border-radius: 50%;
             z-index: -1;
+            pointer-events: none;
+        }
+
+        /* 랜딩페이지(첫 화면) 느낌 강화: 페이드 인 */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(18px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in {
+            animation: fadeInUp 800ms ease both;
+        }
+
+        .view-section {
+            display: none;
+        }
+        .view-section.active {
+            display: block;
+            animation: fadeInUp 600ms ease both;
+        }
+
+        /* 커스텀 버튼 스타일 */
+        .btn-back {
+            background: rgba(197, 160, 89, 0.1);
+            border: 1px solid rgba(197, 160, 89, 0.3);
+            padding: 0.5rem 1.5rem;
+            border-radius: 9999px;
+            color: #c5a059;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        .btn-back:hover {
+            background: rgba(197, 160, 89, 0.2);
+            transform: translateX(-5px);
         }
     </style>
 </head>
@@ -52,8 +89,8 @@
     <div class="glow-effect" style="top: 10%; left: -100px;"></div>
     <div class="glow-effect" style="bottom: 10%; right: -100px;"></div>
 
-    <div class="min-h-screen flex flex-col items-center justify-center px-6 py-12">
-        <!-- Header Section -->
+    <!-- ✅ [VIEW 0: MAIN LANDING] -->
+    <div id="main-landing" class="view-section active min-h-screen flex flex-col items-center justify-center px-6 py-12">
         <header class="text-center mb-16 animate-fade-in">
             <div class="inline-block bg-[#c5a059]/10 text-[#c5a059] px-6 py-2 rounded-full text-sm font-bold tracking-[0.3em] border border-[#c5a059]/30 mb-8 uppercase">
                 EST. 2026 PNU GOURMET
@@ -67,10 +104,9 @@
             </p>
         </header>
 
-        <!-- Navigation Cards -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-5xl">
-            <!-- Restaurant Link -->
-            <a href="01.html" class="group">
+            <!-- Restaurant Button -->
+            <button onclick="showPage('01')" class="group text-left" aria-label="엄선 맛집 페이지로 이동">
                 <div class="card-hover relative overflow-hidden bg-[#0d1520] rounded-[2.5rem] p-10 gold-border transition-all duration-500 h-[400px] flex flex-col justify-end">
                     <div class="absolute top-10 right-10 text-[#c5a059] opacity-20 group-hover:opacity-100 transition-opacity duration-500">
                         <i class="fas fa-utensils text-7xl"></i>
@@ -85,13 +121,12 @@
                             VIEW LIST <i class="fas fa-arrow-right ml-2 group-hover:translate-x-2 transition-transform"></i>
                         </div>
                     </div>
-                    <!-- Decorative Circle -->
                     <div class="absolute -bottom-10 -left-10 w-40 h-40 bg-[#c5a059]/5 rounded-full blur-2xl group-hover:bg-[#c5a059]/10 transition-colors"></div>
                 </div>
-            </a>
+            </button>
 
-            <!-- Cafe Link -->
-            <a href="02.html" class="group">
+            <!-- Cafe Button -->
+            <button onclick="showPage('02')" class="group text-left" aria-label="감성 카페 페이지로 이동">
                 <div class="card-hover relative overflow-hidden bg-[#0d1520] rounded-[2.5rem] p-10 gold-border transition-all duration-500 h-[400px] flex flex-col justify-end">
                     <div class="absolute top-10 right-10 text-[#c5a059] opacity-20 group-hover:opacity-100 transition-opacity duration-500">
                         <i class="fas fa-coffee text-7xl"></i>
@@ -106,13 +141,11 @@
                             EXPLORE <i class="fas fa-arrow-right ml-2 group-hover:translate-x-2 transition-transform"></i>
                         </div>
                     </div>
-                    <!-- Decorative Circle -->
                     <div class="absolute -bottom-10 -left-10 w-40 h-40 bg-[#c5a059]/5 rounded-full blur-2xl group-hover:bg-[#c5a059]/10 transition-colors"></div>
                 </div>
-            </a>
+            </button>
         </div>
 
-        <!-- Info Footer -->
         <footer class="mt-24 text-center">
             <div class="flex items-center justify-center gap-8 mb-8 text-slate-500 text-sm font-bold tracking-widest uppercase">
                 <span class="hover:text-[#c5a059] cursor-pointer transition-colors">About</span>
@@ -122,5 +155,98 @@
             <p class="text-slate-600 text-xs">© 2026 HYOWON GOURMET. ALL RIGHTS RESERVED.</p>
         </footer>
     </div>
+
+    <!-- ✅ [VIEW 1: RESTAURANT (01.html)] -->
+    <div id="page-01" class="view-section py-20 px-6 max-w-6xl mx-auto min-h-screen">
+        <button onclick="showPage('main')" class="btn-back mb-10 flex items-center gap-2">
+            <i class="fas fa-arrow-left"></i> 돌아가기
+        </button>
+        
+        <header class="mb-16">
+            <h2 class="text-5xl font-black mb-4">Selection 01. <span class="gold-gradient">엄선 맛집</span></h2>
+            <p class="text-slate-400 text-xl">부산대학교 구성원들이 검증한 실패 없는 로컬 미식 리스트</p>
+        </header>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- 식당 카드 예시 -->
+            <div class="bg-[#0d1520] p-8 rounded-3xl gold-border card-hover">
+                <div class="text-[#c5a059] mb-4 text-xl"><i class="fas fa-star"></i> 4.9</div>
+                <h3 class="text-2xl font-bold mb-2">톤쇼우</h3>
+                <p class="text-slate-400 mb-6">최상의 원육과 저온 조리법으로 완성한 인생 돈카츠.</p>
+                <div class="text-xs font-bold text-[#c5a059] tracking-widest">#정문 #프리미엄 #웨이팅필수</div>
+            </div>
+            <div class="bg-[#0d1520] p-8 rounded-3xl gold-border card-hover">
+                <div class="text-[#c5a059] mb-4 text-xl"><i class="fas fa-star"></i> 4.7</div>
+                <h3 class="text-2xl font-bold mb-2">수림식당</h3>
+                <p class="text-slate-400 mb-6">깊은 국물의 우육면과 중독적인 가지튀김의 조화.</p>
+                <div class="text-xs font-bold text-[#c5a059] tracking-widest">#정문 #탄탄면 #가지튀김</div>
+            </div>
+            <div class="bg-[#0d1520] p-8 rounded-3xl gold-border card-hover">
+                <div class="text-[#c5a059] mb-4 text-xl"><i class="fas fa-star"></i> 4.8</div>
+                <h3 class="text-2xl font-bold mb-2">코하루</h3>
+                <p class="text-slate-400 mb-6">오랜 시간 우려낸 진한 돈코츠 라멘의 정석.</p>
+                <div class="text-xs font-bold text-[#c5a059] tracking-widest">#북문 #라멘 #소울푸드</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ✅ [VIEW 2: CAFE (02.html)] -->
+    <div id="page-02" class="view-section py-20 px-6 max-w-6xl mx-auto min-h-screen">
+        <button onclick="showPage('main')" class="btn-back mb-10 flex items-center gap-2">
+            <i class="fas fa-arrow-left"></i> 돌아가기
+        </button>
+        
+        <header class="mb-16">
+            <h2 class="text-5xl font-black mb-4">Selection 02. <span class="gold-gradient">감성 카페</span></h2>
+            <p class="text-slate-400 text-xl">사색과 대화, 그리고 향기로운 커피가 있는 특별한 공간</p>
+        </header>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- 카페 카드 예시 -->
+            <div class="bg-[#0d1520] p-8 rounded-3xl gold-border card-hover">
+                <div class="text-[#c5a059] mb-4 text-xl"><i class="fas fa-mug-hot"></i></div>
+                <h3 class="text-2xl font-bold mb-2">에타리 (Etalee)</h3>
+                <p class="text-slate-400 mb-6">포르투갈식 에그타르트의 정수를 만나는 곳.</p>
+                <div class="text-xs font-bold text-[#c5a059] tracking-widest">#정문 #타르트맛집 #야외테라스</div>
+            </div>
+            <div class="bg-[#0d1520] p-8 rounded-3xl gold-border card-hover">
+                <div class="text-[#c5a059] mb-4 text-xl"><i class="fas fa-mug-hot"></i></div>
+                <h3 class="text-2xl font-bold mb-2">모모스커피</h3>
+                <p class="text-slate-400 mb-6">스페셜티 커피의 성지, 월드 바리스타의 고향.</p>
+                <div class="text-xs font-bold text-[#c5a059] tracking-widest">#온천장 #스페셜티 #숲뷰</div>
+            </div>
+            <div class="bg-[#0d1520] p-8 rounded-3xl gold-border card-hover">
+                <div class="text-[#c5a059] mb-4 text-xl"><i class="fas fa-mug-hot"></i></div>
+                <h3 class="text-2xl font-bold mb-2">스테이 히얼 투데이</h3>
+                <p class="text-slate-400 mb-6">아기자기한 디저트와 아늑한 인테리어가 돋보이는 공간.</p>
+                <div class="text-xs font-bold text-[#c5a059] tracking-widest">#북문 #디저트 #아지트</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /**
+         * 단순 뷰 전환 함수
+         * @param {string} pageId - 'main', '01', '02'
+         */
+        function showPage(pageId) {
+            // 모든 섹션 숨기기
+            document.querySelectorAll('.view-section').forEach(section => {
+                section.classList.remove('active');
+            });
+
+            // 대상 섹션 보이기
+            if (pageId === 'main') {
+                document.getElementById('main-landing').classList.add('active');
+            } else if (pageId === '01') {
+                document.getElementById('page-01').classList.add('active');
+            } else if (pageId === '02') {
+                document.getElementById('page-02').classList.add('active');
+            }
+            
+            // 페이지 상단으로 스크롤
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    </script>
 </body>
 </html>
