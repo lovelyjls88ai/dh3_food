@@ -33,7 +33,7 @@
     }
     .glow-effect { animation: pulse-glow 4s infinite ease-in-out; }
 
-    /* ✅ 모달 scale 애니메이션 */
+    /* 모달 scale 애니메이션 */
     .modal-panel {
       transform: translateY(10px) scale(0.98);
       opacity: 0;
@@ -61,7 +61,7 @@
       </h1>
 
       <a
-        href="index.html"
+        href="#"
         class="px-6 py-2 rounded-full border border-[#c5a059]/40 text-[#c5a059] font-bold text-sm
                hover:bg-[#c5a059] hover:text-[#0a192f] transition-all duration-300 flex items-center gap-2"
       >
@@ -89,7 +89,7 @@
   <main id="cafe-list" class="max-w-6xl mx-auto px-4 py-20">
     <div class="flex flex-col gap-8 md:gap-10">
 
-      <!-- ✅ 검색/태그 필터 -->
+      <!-- 검색/태그 필터 -->
       <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
         <div class="space-y-4">
           <div class="flex items-center justify-between mb-1">
@@ -198,7 +198,7 @@
     const cafes = [
       { name: "의정서", tag: "모던/블랙", desc: "시크한 무채색 인테리어와 예술적인 디저트가 조화로운 공간입니다.", sig: "블랙 프렌치 토스트", img: "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=800&q=80", loc: "부산 금정구 금정로52번길 25", reviews: ["인테리어가 독보적!", "분위기 조용해요"] },
       { name: "에타리 (etalee)", tag: "유럽풍", desc: "부산대 에그타르트의 성지라 불리며, 이국적인 테라스가 매력적입니다.", sig: "에그타르트, 치즈타르트", img: "https://images.unsplash.com/photo-1517433670267-08bbd4be890f?auto=format&fit=crop&w=800&q=80", loc: "부산 금정구 장전로18번길 24", reviews: ["인생 타르트입니다.", "테라스가 예뻐요"] },
-      { name: "카페 부곡", tag: "주택개조", desc: "고즈넉한 주택 감성과 정성 가득한 수제 메뉴를 선보입니다.", sig: "부곡라떼, 수제 쿠키", img: "https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=800&q=80", loc: "부산 금정구 부곡로141번길", reviews: ["주택 개조 감성 좋아요.", "라떼가 쫀득합니다."] },
+      { name: "카페부곡", tag: "주택개조", desc: "고즈넉한 주택 감성과 정성 가득한 수제 메뉴를 선보입니다.", sig: "부곡라떼, 수제 쿠키", img: "https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=800&q=80", loc: "부산 금정구 동부곡로15번길 38", reviews: ["주택 개조 감성 좋아요.", "라떼가 쫀득합니다."] },
       { name: "소사베이커리", tag: "빈티지/우드", desc: "아늑한 다락방 느낌의 공간에서 매일 구워내는 과자들이 가득합니다.", sig: "얼그레이 파운드, 레몬 케이크", img: "https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=800&q=80", loc: "부산 금정구 금정로", reviews: ["다락방 감성 제대로입니다.", "파운드 케이크 추천!"] },
       { name: "쿨키즈네버다이", tag: "힙/캐주얼", desc: "에스프레소의 정석과 힙한 인테리어를 동시에 즐길 수 있는 스팟입니다.", sig: "에스프레소, 휘낭시에", img: "https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&w=800&q=80", loc: "부산 금정구 금정로", reviews: ["완전 힙해요!", "에스프레소 맛집입니다."] },
       { name: "보노베리", tag: "디저트특화", desc: "다양한 제철 과일 타르트가 반겨주는 정통 디저트 카페입니다.", sig: "딸기 타르트, 과일 케이크", img: "https://images.unsplash.com/photo-1565958011703-44f9829ba187?auto=format&fit=crop&w=800&q=80", loc: "부산 금정구 장전로", reviews: ["과일이 신선해요.", "비주얼 최고입니다."] },
@@ -223,6 +223,12 @@
       return String(str).replace(/[&<>"']/g, (m) => ({
         '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
       }[m]));
+    }
+
+    function handleOpenNaverMap(address, name) {
+      const destination = encodeURIComponent(address);
+      const url = `https://map.naver.com/p/search/${destination}`;
+      window.open(url, "_blank");
     }
 
     function renderTagChips() {
@@ -321,7 +327,14 @@
       document.getElementById('modal-location').innerText = cafe.loc;
       document.getElementById('modal-img').src = cafe.img;
       document.getElementById('modal-tag').innerText = cafe.tag;
-      document.getElementById('naver-link').href = `https://map.naver.com/v5/search/${encodeURIComponent(cafe.name + ' ' + cafe.loc)}`;
+
+      const naverLink = document.getElementById('naver-link');
+      naverLink.href = `https://map.naver.com/p/search/${encodeURIComponent(cafe.loc)}`;
+      naverLink.onclick = (e) => {
+        e.preventDefault();
+        handleOpenNaverMap(cafe.loc, cafe.name);
+      };
+
       const reviewContainer = document.getElementById('modal-reviews');
       reviewContainer.innerHTML = '';
       cafe.reviews.forEach(review => {
