@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>부산대 감성 카페 가이드 | PNU CAFE ARCHIVE</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Font Awesome -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;700;900&display=swap');
+    body { font-family: 'Noto Sans KR', sans-serif; }
+
+    .cafe-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); height: 100%; display: flex; flex-direction: column; }
+    .cafe-card:hover { transform: translateY(-8px); border-color: rgba(197, 160, 89, 0.5); }
+
+    .modal { transition: opacity 0.3s ease, visibility 0.3s ease; }
+    body.modal-active { overflow: hidden; }
+
+    .cafe-image { object-fit: cover; width: 100%; height: 100%; transition: transform 0.5s ease; }
+    .cafe-card:hover .cafe-image { transform: scale(1.05); }
+
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #050a12; }
+    ::-webkit-scrollbar-thumb { background: #c5a059; border-radius: 10px; }
+
+    @keyframes pulse-glow {
+      0%, 100% { opacity: 0.5; transform: scale(1); }
+      50% { opacity: 0.8; transform: scale(1.1); }
+    }
+    .glow-effect { animation: pulse-glow 4s infinite ease-in-out; }
+
+    /* ✅ 모달 scale 애니메이션 */
+    .modal-panel {
+      transform: translateY(10px) scale(0.98);
+      opacity: 0;
+      transition: transform 260ms ease, opacity 260ms ease;
+      will-change: transform, opacity;
+    }
+    .modal-open .modal-panel {
+      transform: translateY(0) scale(1);
+      opacity: 1;
+    }
+  </style>
+</head>
+
+<body class="bg-[#050a12] text-slate-200 antialiased selection:bg-[#c5a059] selection:text-[#0a192f]">
+
+  <!-- Header -->
+  <header class="bg-[#0a192f]/90 backdrop-blur-md border-b border-[#c5a059]/20 sticky top-0 z-50 shadow-xl">
+    <div class="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
+      <h1
+        class="text-xl md:text-2xl font-black tracking-tighter text-[#c5a059] cursor-pointer flex items-center group"
+        onclick="scrollToLanding()"
+      >
+        <i class="fas fa-coffee mr-3 group-hover:rotate-12 transition-transform"></i>
+        PNU CAFE ARCHIVE
+      </h1>
+
+      <button
+        onclick="scrollToLanding()"
+        class="px-6 py-2 rounded-full border border-[#c5a059]/40 text-[#c5a059] font-bold text-sm
+               hover:bg-[#c5a059] hover:text-[#0a192f] transition-all duration-300"
+      >
+        HOME
+      </button>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section id="landing" class="relative py-28 px-4 text-center overflow-hidden border-b border-[#c5a059]/10">
+    <div class="max-w-6xl mx-auto relative z-10">
+      <h2 class="text-4xl md:text-6xl font-black mb-10 text-white leading-snug md:leading-tight">
+        부산대 앞,<br>나만 알고 싶은 감성 카페
+      </h2>
+      <p class="text-lg md:text-xl text-slate-400 font-light whitespace-nowrap overflow-hidden text-ellipsis">
+        부리단길 골목 사이사이 숨겨진 10곳의 시그니처 메뉴와 로컬 리뷰를 확인해보세요.
+      </p>
+    </div>
+    <div class="glow-effect absolute top-8 left-1/3 w-72 h-72 bg-[#c5a059]/10 rounded-full blur-[150px]"></div>
+    <div class="glow-effect absolute bottom-0 right-1/4 w-96 h-96 bg-[#c5a059]/5 rounded-full blur-[190px]" style="animation-delay: 2s;"></div>
+  </section>
+
+  <!-- Cafe Grid -->
+  <main id="cafe-list" class="max-w-6xl mx-auto px-4 py-20">
+    <div class="flex flex-col gap-8 md:gap-10">
+
+      <!-- ✅ 검색/태그 필터 -->
+      <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
+        <div class="space-y-4">
+          <div class="flex items-center justify-between mb-1">
+            <h3 class="text-2xl font-bold text-white flex items-center">
+              <span class="w-8 h-[2px] bg-[#c5a059] mr-4"></span>
+              Cafe List
+            </h3>
+            <p class="text-slate-500 text-sm font-medium md:hidden">Top 10 Locations</p>
+          </div>
+
+          <div class="relative w-full md:w-[520px]">
+            <i class="fas fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-[#c5a059] opacity-90"></i>
+            <input
+              id="searchInput"
+              type="text"
+              placeholder="카페명, 태그, 시그니처로 검색..."
+              class="w-full bg-[#0d1520] border border-[#c5a059]/20 rounded-2xl py-4 pl-12 pr-4
+                     text-sm text-slate-200 placeholder:text-slate-500
+                     focus:outline-none focus:ring-4 focus:ring-[#c5a059]/10 focus:border-[#c5a059]/50 transition"
+            />
+          </div>
+
+          <div class="flex flex-wrap gap-2" id="tagFilter">
+            <!-- tags injected -->
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between md:justify-end gap-4">
+          <p class="text-slate-500 text-sm font-medium hidden md:block">Top 10 Locations</p>
+          <div class="bg-[#0d1520] border border-[#c5a059]/15 rounded-xl px-4 py-2 text-sm font-bold text-slate-300">
+            검색 결과: <span id="resultCount" class="text-[#c5a059]">10</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10" id="cafe-container">
+        <!-- JavaScript will populate this -->
+      </div>
+
+      <!-- empty state -->
+      <div id="emptyState" class="hidden text-center py-24 border border-dashed border-[#c5a059]/20 rounded-3xl bg-[#0d1520]/30">
+        <i class="fas fa-circle-info text-4xl text-[#c5a059]/50 mb-4"></i>
+        <p class="text-lg font-black text-slate-200 mb-2">검색 결과가 없습니다.</p>
+        <p class="text-sm text-slate-500">다른 키워드 또는 태그를 선택해보세요.</p>
+      </div>
+    </div>
+  </main>
+
+  <!-- Modal Structure -->
+  <div id="modal" class="modal opacity-0 invisible fixed inset-0 flex items-center justify-center z-[100] p-4">
+    <div class="absolute inset-0 bg-black/85 backdrop-blur-md" onclick="toggleModal(false)"></div>
+
+    <div class="modal-panel relative bg-[#0d1520] w-full max-w-lg rounded-3xl shadow-2xl z-[101] overflow-hidden border border-[#c5a059]/30 flex flex-col max-h-[90vh]">
+      <div class="overflow-y-auto flex-grow">
+        <div class="relative h-56 md:h-64 overflow-hidden">
+          <img id="modal-img" src="" alt="카페 이미지" class="w-full h-full object-cover" loading="lazy">
+          <div class="absolute inset-0 bg-gradient-to-t from-[#0d1520] to-transparent"></div>
+          <button onclick="toggleModal(false)" class="absolute top-4 right-4 w-10 h-10 rounded-full bg-black/50 text-white flex items-center justify-center hover:bg-[#c5a059] hover:text-[#0a192f] transition-all">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+
+        <div class="p-6 md:p-8 space-y-8">
+          <div>
+            <span id="modal-tag" class="inline-block px-2 py-0.5 rounded text-[10px] font-bold bg-[#c5a059] text-[#0a192f] mb-3"></span>
+            <h3 class="text-3xl font-black text-white" id="modal-title"></h3>
+          </div>
+
+          <div>
+            <h4 class="font-black text-[#c5a059] mb-3 flex items-center tracking-widest text-xs uppercase">
+              <i class="fas fa-location-dot mr-2"></i>Location Info
+            </h4>
+            <div class="bg-[#050a12] p-5 rounded-2xl border border-[#c5a059]/15 space-y-4">
+              <p id="modal-location" class="text-slate-300 text-sm leading-relaxed"></p>
+              <a id="naver-link" href="#" target="_blank" rel="noopener noreferrer"
+                 class="inline-flex items-center gap-2 text-sm font-bold text-[#c5a059] hover:underline">
+                <i class="fas fa-location-arrow"></i> 네이버지도 길찾기
+              </a>
+            </div>
+          </div>
+
+          <div>
+            <h4 class="font-black text-[#c5a059] mb-4 flex items-center tracking-widest text-xs uppercase">
+              <i class="fas fa-comment-dots mr-2"></i>Local Reviews
+            </h4>
+            <div id="modal-reviews" class="space-y-4"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="p-6 bg-[#0d1520] border-t border-[#c5a059]/10">
+        <button class="w-full py-4 bg-gradient-to-r from-[#c5a059] to-[#f3d38c] text-[#0a192f] font-black rounded-xl hover:scale-[1.02] transition-transform shadow-xl uppercase tracking-widest" onclick="toggleModal(false)">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <footer class="bg-[#03070d] text-slate-500 py-16 px-4 border-t border-[#c5a059]/10">
+    <div class="max-w-6xl mx-auto text-center">
+      <p class="mb-4 font-black tracking-[0.3em] text-xs text-[#c5a059]/60 uppercase">PNU CAFE ARCHIVE PROJECT</p>
+      <p class="text-[10px] text-slate-600">© 2026 Designed for PNU Students. All data is for curation purposes.</p>
+    </div>
+  </footer>
+
+  <script>
+    const cafes = [
+      { name: "의정서", tag: "모던/블랙", desc: "시크한 무채색 인테리어와 예술적인 디저트가 조화로운 공간입니다.", sig: "블랙 프렌치 토스트", img: "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=800&q=80", loc: "부산 금정구 금정로52번길 25", reviews: ["인테리어가 독보적!", "분위기 조용해요"] },
+      { name: "에타리 (etalee)", tag: "유럽풍", desc: "부산대 에그타르트의 성지라 불리며, 이국적인 테라스가 매력적입니다.", sig: "에그타르트, 치즈타르트", img: "https://images.unsplash.com/photo-1517433670267-08bbd4be890f?auto=format&fit=crop&w=800&q=80", loc: "부산 금정구 장전로18번길 24", reviews: ["인생 타르트입니다.", "테라스가 예뻐요"] },
+      { name: "카페 부곡", tag: "주택개조", desc: "고즈넉한 주택 감성과 정성 가득한 수제 메뉴를 선보입니다.", sig: "부곡라떼, 수제 쿠키", img: "https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=800&q=80", loc: "부산 금정구 부곡로141번길", reviews: ["주택 개조 감성 좋아요.", "라떼가 쫀득합니다."] },
+      { name: "소사베이커리", tag: "빈티지/우드", desc: "아늑한 다락방 느낌의 공간에서 매일 구워내는 과자들이 가득합니다.", sig: "얼그레이 파운드, 레몬 케이크", img: "https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=800&q=80", loc: "부산 금정구 금정로", reviews: ["다락방 감성 제대로입니다.", "파운드 케이크 추천!"] },
+      { name: "쿨키즈네버다이", tag: "힙/캐주얼", desc: "에스프레소의 정석과 힙한 인테리어를 동시에 즐길 수 있는 스팟입니다.", sig: "에스프레소, 휘낭시에", img: "https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&w=800&q=80", loc: "부산 금정구 금정로", reviews: ["완전 힙해요!", "에스프레소 맛집입니다."] },
+      { name: "보노베리", tag: "디저트특화", desc: "다양한 제철 과일 타르트가 반겨주는 정통 디저트 카페입니다.", sig: "딸기 타르트, 과일 케이크", img: "https://images.unsplash.com/photo-1565958011703-44f9829ba187?auto=format&fit=crop&w=800&q=80", loc: "부산 금정구 장전로", reviews: ["과일이 신선해요.", "비주얼 최고입니다."] },
+      { name: "구디너프", tag: "조용한/공부", desc: "차분하게 대화하거나 작업에 집중하기 최적화된 공간입니다.", sig: "필터 커피, 버터 스카치", img: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=800&q=80", loc: "부산 금정구 장전로", reviews: ["조용해서 좋아요.", "커피 향이 일품입니다."] },
+      { name: "밀림 (Millim)", tag: "플랜테리어", desc: "풍성한 식물들과 정원이 어우러진 도심 속 안식처 같은 곳입니다.", sig: "피스타치오 크림라떼", img: "https://images.unsplash.com/photo-1445116572660-236099ec97a0?auto=format&fit=crop&w=800&q=80", loc: "부산 금정구 금정로", reviews: ["숲속 같아요.", "피스타치오 라떼 강추."] },
+      { name: "사시절", tag: "우드/따뜻함", desc: "나무 소재의 따스함과 계절감이 느껴지는 디저트가 인상적입니다.", sig: "계절 과일 케이크", img: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=800&q=80", loc: "부산 금정구 장전로", reviews: ["계절 케이크 최고.", "포근한 분위기입니다."] },
+      { name: "스웨터", tag: "포근한/딸기", desc: "포근한 스웨터 같은 아늑한 감성의 딸기 디저트 맛집입니다.", sig: "수제 딸기 케이크", img: "https://images.unsplash.com/photo-1587668178277-295251f900ce?auto=format&fit=crop&w=800&q=80", loc: "부산 금정구 부산대학로64번길", reviews: ["딸기 케이크 찐맛집.", "아기자기해요."] }
+    ];
+
+    const container = document.getElementById('cafe-container');
+    const emptyState = document.getElementById('emptyState');
+    const resultCount = document.getElementById('resultCount');
+    const searchInput = document.getElementById('searchInput');
+    const tagFilter = document.getElementById('tagFilter');
+
+    const uniqueTags = Array.from(new Set(cafes.map(c => c.tag)));
+    const tags = ["전체", ...uniqueTags];
+    let activeTag = "전체";
+    let searchTerm = "";
+
+    function escapeHtml(str) {
+      return String(str).replace(/[&<>"']/g, (m) => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+      }[m]));
+    }
+
+    function renderTagChips() {
+      tagFilter.innerHTML = tags.map(t => {
+        const isActive = (t === activeTag);
+        return `
+          <button
+            type="button"
+            data-tag="${escapeHtml(t)}"
+            class="px-3 py-1.5 rounded-full text-xs font-black border transition-all
+              ${isActive
+                ? "bg-[#c5a059] text-[#0a192f] border-[#c5a059]"
+                : "bg-[#0d1520] text-slate-300 border-[#c5a059]/20 hover:border-[#c5a059]/50 hover:text-white"}"
+          >
+            ${escapeHtml(t)}
+          </button>
+        `;
+      }).join('');
+    }
+
+    function matches(cafe) {
+      const q = searchTerm.trim().toLowerCase();
+      const tagOk = (activeTag === "전체") || (cafe.tag === activeTag);
+      if (!q) return tagOk;
+      const hay = [cafe.name, cafe.tag, cafe.sig, cafe.desc, cafe.loc].join(' ').toLowerCase();
+      return tagOk && hay.includes(q);
+    }
+
+    function renderCards() {
+      const filtered = cafes
+        .map((c, idx) => ({ ...c, _index: idx }))
+        .filter(matches);
+
+      resultCount.textContent = String(filtered.length);
+      emptyState.classList.toggle('hidden', filtered.length !== 0);
+
+      container.innerHTML = filtered.map((cafe) => {
+        const index = cafe._index;
+        const rank = String(index + 1).padStart(2, '0');
+        return `
+          <div class="cafe-card group bg-[#0d1520] rounded-2xl shadow-2xl border border-[#c5a059]/10 overflow-hidden cursor-pointer relative"
+               onclick="openCafeDetails(${index})">
+            <div class="absolute top-4 left-4 z-30 w-10 h-10 rounded-xl bg-gradient-to-br from-[#c5a059] to-[#f3d38c]
+                        text-[#0a192f] font-black flex items-center justify-center shadow-lg">
+              ${rank}
+            </div>
+            <div class="h-52 bg-[#050a12] overflow-hidden relative shrink-0">
+              <div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors z-10"></div>
+              <img src="${escapeHtml(cafe.img)}" alt="${escapeHtml(cafe.name)}" class="cafe-image"
+                   onerror="this.src='https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=800&q=80'">
+              <span class="absolute top-4 right-4 z-20 bg-[#c5a059] text-[#0a192f] text-[10px] font-bold px-3 py-1 rounded shadow-lg">
+                ${escapeHtml(cafe.tag)}
+              </span>
+            </div>
+            <div class="p-6 flex flex-col grow">
+              <h3 class="text-2xl font-black text-white mb-3 group-hover:text-[#c5a059] transition-colors">
+                ${escapeHtml(cafe.name)}
+              </h3>
+              <p class="text-sm text-slate-400 mb-8 leading-relaxed h-auto">${escapeHtml(cafe.desc)}</p>
+              <div class="mt-auto pt-4 border-t border-[#c5a059]/5">
+                <div class="flex items-center gap-2 mb-5">
+                  <i class="fas fa-star text-yellow-500 text-sm"></i>
+                  <p class="text-sm text-slate-200"><span class="font-bold">시그니처:</span> ${escapeHtml(cafe.sig)}</p>
+                </div>
+                <div class="w-full py-4 bg-[#c5a059]/5 border border-[#c5a059]/30 rounded-xl flex justify-center items-center gap-2
+                            group-hover:bg-[#c5a059] group-hover:text-[#0a192f] transition-all duration-300 shadow-sm">
+                  <span class="text-sm font-bold text-[#c5a059] group-hover:text-[#0a192f]">상세 가이드 보기</span>
+                  <i class="fas fa-chevron-right text-[10px] text-[#c5a059] group-hover:text-[#0a192f] mt-0.5"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    searchInput.addEventListener('input', (e) => {
+      searchTerm = e.target.value || "";
+      renderCards();
+    });
+
+    tagFilter.addEventListener('click', (e) => {
+      const btn = e.target.closest('button[data-tag]');
+      if (!btn) return;
+      activeTag = btn.getAttribute('data-tag') || "전체";
+      renderTagChips();
+      renderCards();
+    });
+
+    renderTagChips();
+    renderCards();
+
+    function openCafeDetails(index) {
+      const cafe = cafes[index];
+      document.getElementById('modal-title').innerText = cafe.name;
+      document.getElementById('modal-location').innerText = cafe.loc;
+      document.getElementById('modal-img').src = cafe.img;
+      document.getElementById('modal-tag').innerText = cafe.tag;
+      document.getElementById('naver-link').href = `https://map.naver.com/v5/search/${encodeURIComponent(cafe.name + ' ' + cafe.loc)}`;
+      const reviewContainer = document.getElementById('modal-reviews');
+      reviewContainer.innerHTML = '';
+      cafe.reviews.forEach(review => {
+        reviewContainer.innerHTML += `
+          <div class="bg-[#050a12] p-4 rounded-xl border-l-4 border-[#c5a059] border border-[#c5a059]/5 shadow-inner">
+            <p class="text-sm text-slate-300 leading-relaxed italic">"${escapeHtml(review)}"</p>
+          </div>
+        `;
+      });
+      toggleModal(true);
+    }
+
+    function toggleModal(open) {
+      const modal = document.getElementById('modal');
+      const body = document.body;
+      const isOpen = !modal.classList.contains('invisible');
+      const shouldOpen = (typeof open === 'boolean') ? open : !isOpen;
+
+      if (shouldOpen) {
+        modal.classList.remove('invisible', 'opacity-0');
+        modal.classList.add('modal-open');
+        body.classList.add('modal-active');
+      } else {
+        modal.classList.remove('modal-open');
+        modal.classList.add('opacity-0');
+        setTimeout(() => {
+          modal.classList.add('invisible');
+          body.classList.remove('modal-active');
+        }, 300);
+      }
+    }
+
+    function scrollToLanding() {
+      const el = document.getElementById('landing');
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      else window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  </script>
+</body>
+</html>
