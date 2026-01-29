@@ -49,7 +49,7 @@
   - https://www.youtube.com/watch?v=IKPz8IPoBSg
   - https://www.youtube.com/watch?v=w_2eBltHVwg
   - https://www.youtube.com/watch?v=ctpxOAmAvvg
-  - 검색: https://www.youtube.com/results?search_query=%EA%B8%88%EC%A0%95%EA%B5%AC+%EB%B6%80%EC%82%B0%EB%8C%80+%EA%B7%BC%EC%B2%98+%EB%A7%9B%EC%A7%91
+  - https://www.youtube.com/results?search_query=%EA%B8%88%EC%A0%95%EA%B5%AC+%EB%B6%80%EC%82%B0%EB%8C%80+%EA%B7%BC%EC%B2%98+%EB%A7%9B%EC%A7%91
 - 카카오맵
   - https://map.kakao.com/?from=total&nil_suggest=btn&q=%EB%B6%80%EC%82%B0%EB%8C%80%20%EB%A7%9B%EC%A7%91&tab=place
 - 네이버 검색
@@ -147,7 +147,7 @@
 ## 12. 팀 정보
 
 - 팀명: 효원(曉原) 미식회  
-- 팀 구성원: (기획서 표 기준으로 기입)
+- 팀 구성원: 김서윤, 김소정, 김시현
 
 ---
 
