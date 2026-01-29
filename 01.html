@@ -28,15 +28,137 @@
       from { opacity: 0; transform: scale(0.95); }
       to { opacity: 1; transform: scale(1); }
     }
+
+    .restaurant-card {
+      transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    .restaurant-card.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .restaurant-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 15px 35px -12px rgba(2, 12, 27, 0.8);
+    }
   </style>
 </head>
 
-<body class="min-h-screen bg-[#050a12] font-sans text-slate-200">
-  <div id="app"></div>
+<body class="min-h-screen bg-[#050a12] font-sans text-slate-200 selection:bg-[#c5a059] selection:text-[#0a192f]">
+  <div id="app">
+    <!-- 정적 레이아웃은 초기 로드 시 한 번만 그려집니다 -->
+    
+    <!-- Navbar -->
+    <nav class="sticky top-0 z-50 bg-[#0a192f]/90 backdrop-blur-md border-b border-[#c5a059]/20 px-6 py-4">
+      <div class="max-w-7xl mx-auto flex justify-between items-center">
+        <div class="flex items-center gap-3 cursor-pointer" onclick="window.location.reload()">
+          <div class="bg-[#c5a059] p-1.5 rounded-lg shadow-[0_0_15px_rgba(197,160,89,0.3)]">
+            <i data-lucide="award" class="text-[#0a192f]" style="width:24px;height:24px"></i>
+          </div>
+          <h1 class="text-xl md:text-2xl font-black text-[#c5a059] tracking-tight">
+            효원(曉原) 미식회
+          </h1>
+        </div>
+
+        <button
+          onclick="window.location.reload()"
+          class="group flex items-center gap-2 bg-slate-800/50 hover:bg-[#c5a059] transition-all px-4 py-2 rounded-full border border-slate-700 hover:border-[#c5a059]"
+        >
+          <i data-lucide="home" class="group-hover:text-[#0a192f]" style="width:18px;height:18px"></i>
+          <span class="text-sm font-bold group-hover:text-[#0a192f] hidden sm:inline">Home</span>
+        </button>
+      </div>
+    </nav>
+
+    <!-- Hero -->
+    <header class="relative py-20 px-6 overflow-hidden">
+      <div class="max-w-5xl mx-auto text-center relative z-10">
+        <div class="flex justify-center mb-6">
+          <span class="bg-[#c5a059]/10 text-[#c5a059] px-4 py-1 rounded-full text-xs font-bold tracking-[0.2em] border border-[#c5a059]/30 uppercase">
+            Premier PNU Gourmet Guide
+          </span>
+        </div>
+        <h2 class="text-5xl md:text-7xl font-black mb-8 text-white leading-tight">
+          금정의 맛,<br />
+          <span class="text-transparent bg-clip-text bg-gradient-to-r from-[#c5a059] to-[#f3d38c]">
+            효원의 자부심
+          </span>
+        </h2>
+
+        <div class="relative max-w-2xl mx-auto mt-12">
+          <i data-lucide="search" class="absolute left-6 top-1/2 -translate-y-1/2 text-[#c5a059]" style="width:22px;height:22px"></i>
+          <input
+            id="searchInput"
+            type="text"
+            placeholder="음식 종류, 이름, 키워드로 검색..."
+            class="w-full bg-slate-900/80 border-2 border-slate-800 rounded-2xl py-5 px-16 focus:outline-none focus:border-[#c5a059] focus:ring-4 focus:ring-[#c5a059]/10 transition-all text-lg shadow-2xl text-white"
+          />
+        </div>
+      </div>
+
+      <!-- Decorative Background -->
+      <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full pointer-events-none">
+        <div class="absolute top-10 left-1/4 w-64 h-64 bg-[#c5a059]/5 rounded-full blur-[120px]"></div>
+        <div class="absolute bottom-10 right-1/4 w-96 h-96 bg-[#c5a059]/10 rounded-full blur-[150px]"></div>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-6 pb-32">
+      <div class="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
+        <div class="space-y-2">
+          <h3 class="text-2xl font-bold text-white flex items-center gap-3">
+            <i data-lucide="flame" class="text-orange-500" style="width:28px;height:28px"></i>
+            검증된 로컬 맛집 <span class="text-[#c5a059]">TOP 30</span> (평점순)
+          </h3>
+          <p class="text-slate-500 font-medium">최고의 미식 경험을 제공하는 평점 높은 순으로 나열하였습니다.</p>
+        </div>
+        <div class="bg-slate-900 px-4 py-2 rounded-lg border border-slate-800 text-sm font-bold">
+          검색 결과: <span id="resultCount" class="text-[#c5a059]">30</span> 건
+        </div>
+      </div>
+
+      <!-- 리스트가 렌더링 될 컨테이너 -->
+      <div id="restaurantGridContainer"></div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-[#03070d] border-t border-slate-900 py-20 px-6">
+      <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-12">
+        <div class="text-center md:text-left space-y-4">
+          <h2 class="text-3xl font-black text-[#c5a059]">효원(曉原) 미식회</h2>
+          <p class="text-slate-500 max-w-md text-sm leading-relaxed font-medium">
+            본 가이드는 부산대학교 학생들과 로컬 주민들의 생생한 리뷰를 바탕으로 큐레이션 되었습니다. 상업적 목적이 아닌 미식 정보 공유를 위해 제작되었습니다.
+          </p>
+        </div>
+
+        <div class="text-right">
+          <div class="flex items-center gap-2 text-slate-500 font-bold mb-4 justify-center md:justify-end">
+            <i data-lucide="navigation" style="width:16px;height:16px"></i>
+            <span>부산광역시 금정구 장전동 일대</span>
+          </div>
+          <p class="text-slate-600 text-xs">Curated by PNU Gourmet Society</p>
+        </div>
+      </div>
+
+      <div class="max-w-7xl mx-auto mt-20 pt-8 border-t border-slate-900 text-center text-slate-700 text-xs font-bold tracking-widest uppercase">
+        © 2026 Hyo-Won Gourmet Society. Elegance in every bite.
+      </div>
+    </footer>
+
+    <!-- Detail Modal -->
+    <div id="modalOverlay" class="fixed inset-0 z-[100] hidden items-center justify-center p-4 md:p-8">
+        <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" onclick="closeModal()"></div>
+        <div id="modalContentWrapper" class="relative bg-[#0d1520] w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-[2.5rem] border border-[#c5a059]/30 shadow-2xl modal-enter">
+            <!-- Modal Content Injected Here -->
+        </div>
+    </div>
+  </div>
 
   <script>
     // -----------------------------
-    // Data
+    // Data (30 Restaurants)
     // -----------------------------
     const restaurantsData = [
       { id: 1, name: "톤쇼우 부산대점", type: "돈카츠", menu: "버크셔K 로스카츠", rating: 4.8, address: "부산 금정구 금강로 247-10", description: "설명이 필요 없는 부산 대표 돈카츠. 핑크빛 육즙과 숯불향이 특징.", tags: ["인생카츠", "웨이팅필수"], review: "인생 돈카츠를 만났습니다. 부드러움이 차원이 달라요.", image: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&q=80&w=800" },
@@ -72,403 +194,199 @@
     ];
 
     // 평점 내림차순 정렬
-    const sortedRestaurants = [...restaurantsData].sort((a, b) => b.rating - a.rating);
+    const sortedData = [...restaurantsData].sort((a, b) => b.rating - a.rating);
 
     // -----------------------------
-    // State
+    // App Logic (Search Fix)
     // -----------------------------
-    const state = {
-      searchTerm: "",
-      selectedId: null
-    };
+    const gridEl = document.getElementById("restaurantGridContainer");
+    const countEl = document.getElementById("resultCount");
+    const searchInput = document.getElementById("searchInput");
+    const modalOverlay = document.getElementById("modalOverlay");
+    const modalWrapper = document.getElementById("modalContentWrapper");
 
-    // -----------------------------
-    // Utils
-    // -----------------------------
-    function escapeHtml(str) {
-      return String(str)
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
-    }
+    // 1. Render Function (Updates only the grid part)
+    function renderList(list) {
+      if (countEl) countEl.innerText = list.length;
 
-    /**
-     * 네이버 지도 길찾기로 연동
-     * daddr: 목적지 주소
-     * dname: 목적지 명칭 (선택사항이나 입력하면 더 정확함)
-     */
-    function handleOpenNaverMap(address, name) {
-      const destination = encodeURIComponent(address);
-      const destinationName = encodeURIComponent(name);
-      // 네이버 지도 길찾기 URL (웹 버전)
-      const url = `https://map.naver.com/p/search/${destination}`;
-      // 혹은 상세 길찾기 모드로 바로 진입하고 싶다면 아래 주소 사용
-      // const url = `https://map.naver.com/v5/directions/-/-/${destination},${destinationName},-,ADDRESS_POI/walk`;
-      
-      window.open(url, "_blank");
-    }
-
-    function matchesSearch(r, q) {
-      if (!q) return true;
-      const needle = q.trim().toLowerCase();
-      if (!needle) return true;
-
-      const inName = r.name.toLowerCase().includes(needle);
-      const inType = r.type.toLowerCase().includes(needle);
-      const inTags = (r.tags || []).some(t => String(t).toLowerCase().includes(needle));
-      return inName || inType || inTags;
-    }
-
-    function getFiltered() {
-      return sortedRestaurants.filter(r => matchesSearch(r, state.searchTerm));
-    }
-
-    function getSelectedRestaurant() {
-      if (state.selectedId == null) return null;
-      return sortedRestaurants.find(r => r.id === state.selectedId) || null;
-    }
-
-    // 별점(0~5) 렌더
-    function renderStars(rating) {
-      const filled = Math.floor(rating);
-      let html = "";
-      for (let i = 0; i < 5; i++) {
-        const cls = i < filled ? "text-yellow-500 fill-yellow-500" : "text-slate-700";
-        html += `<i data-lucide="star" class="${cls}" style="width:12px;height:12px"></i>`;
-      }
-      return html;
-    }
-
-    // -----------------------------
-    // Render
-    // -----------------------------
-    const appEl = document.getElementById("app");
-
-    function render() {
-      const filtered = getFiltered();
-      const selected = getSelectedRestaurant();
-
-      appEl.innerHTML = `
-        <div class="min-h-screen bg-[#050a12] font-sans text-slate-200">
-          <!-- Navbar -->
-          <nav class="sticky top-0 z-50 bg-[#0a192f]/90 backdrop-blur-md border-b border-[#c5a059]/20 px-6 py-4">
-            <div class="max-w-7xl mx-auto flex justify-between items-center">
-              <div class="flex items-center gap-3">
-                <div class="bg-[#c5a059] p-1.5 rounded-lg shadow-[0_0_15px_rgba(197,160,89,0.3)]">
-                  <i data-lucide="award" class="text-[#0a192f]" style="width:24px;height:24px"></i>
-                </div>
-                <h1 class="text-xl md:text-2xl font-black text-[#c5a059] tracking-tight">
-                  효원(曉原) 미식회
-                </h1>
-              </div>
-
-              <button
-                data-action="go-home"
-                class="group flex items-center gap-2 bg-slate-800/50 hover:bg-[#c5a059] transition-all px-4 py-2 rounded-full border border-slate-700 hover:border-[#c5a059]"
+      if (list.length === 0) {
+        gridEl.innerHTML = `
+          <div class="col-span-full text-center py-40 border-2 border-dashed border-slate-800 rounded-[3rem]">
+            <i data-lucide="info" class="mx-auto text-slate-700 mb-6" style="width:64px;height:64px"></i>
+            <h4 class="text-2xl font-bold text-slate-500 mb-2">찾으시는 맛집이 없습니다.</h4>
+            <p class="text-slate-600 font-medium">다른 검색어로 다시 시도해 보세요.</p>
+          </div>
+        `;
+      } else {
+        gridEl.innerHTML = `
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            ${list.map((res, index) => `
+              <div
+                class="restaurant-card bg-[#0d1520] rounded-[2rem] p-8 border border-slate-800 hover:border-[#c5a059]/50 flex flex-col cursor-pointer group"
+                onclick="openDetail(${res.id})"
               >
-                <i data-lucide="home" class="group-hover:text-[#0a192f]" style="width:18px;height:18px"></i>
-                <span class="text-sm font-bold group-hover:text-[#0a192f] hidden sm:inline">Home</span>
-              </button>
-            </div>
-          </nav>
+                <!-- Ranking Badge -->
+                <div class="relative w-full mb-6 flex justify-between items-start">
+                   <div class="bg-gradient-to-br from-[#c5a059] to-[#f3d38c] w-10 h-10 rounded-xl flex items-center justify-center font-black text-[#0a192f] shadow-lg">
+                     ${index + 1}
+                   </div>
+                   <div class="flex items-center gap-1.5 bg-black/40 px-3 py-1 rounded-full border border-slate-800">
+                      <i data-lucide="star" class="text-yellow-500 fill-yellow-500" style="width:14px;height:14px"></i>
+                      <span class="text-xs font-bold text-yellow-500">${res.rating.toFixed(1)}</span>
+                   </div>
+                </div>
 
-          <!-- Hero -->
-          <header class="relative py-20 px-6 overflow-hidden">
-            <div class="max-w-5xl mx-auto text-center relative z-10">
-              <div class="flex justify-center mb-6">
-                <span class="bg-[#c5a059]/10 text-[#c5a059] px-4 py-1 rounded-full text-xs font-bold tracking-[0.2em] border border-[#c5a059]/30 uppercase">
-                  Premier PNU Gourmet Guide
+                <span class="bg-slate-800 text-slate-300 text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest w-fit mb-3 transition-colors group-hover:bg-[#c5a059]/20 group-hover:text-[#c5a059]">
+                  ${res.type}
                 </span>
-              </div>
-              <h2 class="text-5xl md:text-7xl font-black mb-8 text-white leading-tight">
-                금정의 맛,<br />
-                <span class="text-transparent bg-clip-text bg-gradient-to-r from-[#c5a059] to-[#f3d38c]">
-                  효원의 자부심
-                </span>
-              </h2>
 
-              <div class="relative max-w-2xl mx-auto mt-12">
-                <i data-lucide="search" class="absolute left-6 top-1/2 -translate-y-1/2 text-[#c5a059]" style="width:22px;height:22px"></i>
-                <input
-                  id="searchInput"
-                  type="text"
-                  placeholder="음식 종류, 이름, 키워드로 검색..."
-                  class="w-full bg-slate-900/80 border-2 border-slate-800 rounded-2xl py-5 px-16 focus:outline-none focus:border-[#c5a059] focus:ring-4 focus:ring-[#c5a059]/10 transition-all text-lg shadow-2xl text-white"
-                  value="${escapeHtml(state.searchTerm)}"
-                />
-              </div>
-            </div>
+                <h4 class="text-2xl font-bold text-white mb-3 group-hover:text-[#c5a059] transition-colors">
+                  ${res.name}
+                </h4>
+                <p class="text-slate-400 text-sm leading-relaxed mb-6 line-clamp-3">
+                  ${res.description}
+                </p>
 
-            <!-- Decorative Background -->
-            <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full pointer-events-none">
-              <div class="absolute top-10 left-1/4 w-64 h-64 bg-[#c5a059]/5 rounded-full blur-[120px]"></div>
-              <div class="absolute bottom-10 right-1/4 w-96 h-96 bg-[#c5a059]/10 rounded-full blur-[150px]"></div>
-            </div>
-          </header>
+                <div class="mt-auto space-y-6">
+                  <div class="flex items-center gap-3 text-xs font-semibold text-slate-300">
+                    <i data-lucide="utensils" class="text-[#c5a059]" style="width:16px;height:16px"></i>
+                    <span>대표메뉴: ${res.menu || "문의 요망"}</span>
+                  </div>
 
-          <!-- Main Content -->
-          <main class="max-w-7xl mx-auto px-6 pb-32">
-            <div class="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
-              <div class="space-y-2">
-                <h3 class="text-2xl font-bold text-white flex items-center gap-3">
-                  <i data-lucide="flame" class="text-orange-500" style="width:28px;height:28px"></i>
-                  검증된 로컬 맛집 <span class="text-[#c5a059]">TOP 30</span> (평점순)
-                </h3>
-                <p class="text-slate-500 font-medium">최고의 미식 경험을 제공하는 평점 높은 순으로 나열하였습니다.</p>
-              </div>
-              <div class="bg-slate-900 px-4 py-2 rounded-lg border border-slate-800 text-sm font-bold">
-                검색 결과: <span class="text-[#c5a059]">${filtered.length}</span> 건
-              </div>
-            </div>
+                  <div class="flex flex-wrap gap-2">
+                    ${(res.tags || []).map(tag =>
+                      `<span class="text-[10px] text-[#c5a059] font-bold opacity-60">#${tag}</span>`
+                    ).join("")}
+                  </div>
 
-            ${
-              filtered.length > 0
-                ? `<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    ${filtered.map((res, index) => `
-                      <div
-                        class="group relative bg-[#0d1520] rounded-[2rem] p-8 border border-slate-800 hover:border-[#c5a059]/50 transition-all duration-500 shadow-sm hover:shadow-[0_20px_40px_rgba(0,0,0,0.4)] flex flex-col"
-                      >
-                        <!-- Ranking Badge -->
-                        <div class="absolute -top-3 -left-3 w-10 h-10 bg-gradient-to-br from-[#c5a059] to-[#f3d38c] rounded-xl flex items-center justify-center font-black text-[#0a192f] shadow-lg z-10">
-                          ${index + 1}
-                        </div>
-
-                        <!-- Card Badge -->
-                        <div class="flex justify-between items-start mb-6">
-                          <span class="bg-slate-800 text-slate-300 text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest group-hover:bg-[#c5a059]/20 group-hover:text-[#c5a059] transition-colors ml-6">
-                            ${escapeHtml(res.type)}
-                          </span>
-                          <div class="flex items-center gap-1.5 bg-black/40 px-3 py-1 rounded-full border border-slate-800">
-                            <i data-lucide="star" class="text-yellow-500 fill-yellow-500" style="width:14px;height:14px"></i>
-                            <span class="text-xs font-bold text-yellow-500">${res.rating.toFixed(1)}</span>
-                          </div>
-                        </div>
-
-                        <!-- Card Content -->
-                        <h4 class="text-2xl font-bold text-white mb-3 group-hover:text-[#c5a059] transition-colors">
-                          ${escapeHtml(res.name)}
-                        </h4>
-                        <p class="text-slate-400 text-sm leading-relaxed mb-6 line-clamp-3">
-                          ${escapeHtml(res.description)}
-                        </p>
-
-                        <div class="mt-auto space-y-6">
-                          <div class="flex items-center gap-3 text-xs font-semibold text-slate-300">
-                            <i data-lucide="utensils" class="text-[#c5a059]" style="width:16px;height:16px"></i>
-                            <span>대표메뉴: ${escapeHtml(res.menu || "문의 요망")}</span>
-                          </div>
-
-                          <div class="flex flex-wrap gap-2">
-                            ${(res.tags || []).map(tag =>
-                              `<span class="text-[10px] text-[#c5a059] font-bold opacity-60">#${escapeHtml(tag)}</span>`
-                            ).join("")}
-                          </div>
-
-                          <button
-                            data-action="open-detail"
-                            data-id="${res.id}"
-                            class="w-full py-4 rounded-xl bg-slate-800 group-hover:bg-[#c5a059] text-white group-hover:text-[#0a192f] font-black text-sm transition-all flex items-center justify-center gap-2"
-                          >
-                            상세 가이드 보기
-                            <i data-lucide="chevron-right" style="width:18px;height:18px"></i>
-                          </button>
-                        </div>
-                      </div>
-                    `).join("")}
-                  </div>`
-                : `<div class="text-center py-40 border-2 border-dashed border-slate-800 rounded-[3rem]">
-                    <i data-lucide="info" class="mx-auto text-slate-700 mb-6" style="width:64px;height:64px"></i>
-                    <h4 class="text-2xl font-bold text-slate-500 mb-2">찾으시는 맛집이 없습니다.</h4>
-                    <p class="text-slate-600 font-medium">다른 검색어로 다시 시도해 보세요.</p>
-                  </div>`
-            }
-          </main>
-
-          <!-- Detail Modal -->
-          ${
-            selected
-              ? `
-              <div class="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-8">
-                <div data-action="close-modal" class="absolute inset-0 bg-black/80 backdrop-blur-sm"></div>
-
-                <div class="relative bg-[#0d1520] w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-[2.5rem] border border-[#c5a059]/30 shadow-2xl modal-enter">
-                  <button
-                    data-action="close-modal"
-                    class="absolute top-6 right-6 z-10 bg-black/50 p-2 rounded-full text-white hover:bg-[#c5a059] transition-colors"
-                    aria-label="닫기"
-                  >
-                    <i data-lucide="x" style="width:24px;height:24px"></i>
-                  </button>
-
-                  <div class="flex flex-col md:flex-row">
-                    <!-- Left: Image & Info -->
-                    <div class="md:w-1/2 h-64 md:h-auto relative">
-                      <img
-                        src="${escapeHtml(selected.image)}"
-                        alt="${escapeHtml(selected.name)}"
-                        class="w-full h-full object-cover"
-                      />
-                      <div class="absolute inset-0 bg-gradient-to-t from-[#0d1520] to-transparent"></div>
-                      <div class="absolute bottom-6 left-6 right-6">
-                        <span class="bg-[#c5a059] text-[#0a192f] text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest mb-2 inline-block">
-                          ${escapeHtml(selected.type)}
-                        </span>
-                        <h2 class="text-3xl md:text-4xl font-black text-white">${escapeHtml(selected.name)}</h2>
-                      </div>
-                    </div>
-
-                    <!-- Right: Detailed Content -->
-                    <div class="md:w-1/2 p-8 md:p-12 space-y-8">
-                      <div>
-                        <h5 class="text-[#c5a059] text-xs font-black tracking-widest uppercase mb-4">Location & Guide</h5>
-                        <div class="flex items-start gap-4 bg-slate-900/50 p-5 rounded-2xl border border-slate-800 group hover:border-[#c5a059]/30 transition-all">
-                          <i data-lucide="map-pin" class="text-[#c5a059] shrink-0 mt-1" style="width:20px;height:20px"></i>
-                          <div class="flex-1">
-                            <p class="text-white font-bold mb-1">${escapeHtml(selected.address)}</p>
-                            <button
-                              data-action="open-map"
-                              data-address="${escapeHtml(selected.address)}"
-                              data-name="${escapeHtml(selected.name)}"
-                              class="text-[#00c73c] text-xs font-bold flex items-center gap-1 hover:underline"
-                            >
-                              네이버 지도에서 찾아가기
-                              <i data-lucide="external-link" style="width:12px;height:12px"></i>
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div>
-                        <h5 class="text-[#c5a059] text-xs font-black tracking-widest uppercase mb-4">Description</h5>
-                        <p class="text-slate-300 leading-relaxed font-medium">
-                          ${escapeHtml(selected.description)}
-                        </p>
-                      </div>
-
-                      <div>
-                        <h5 class="text-[#c5a059] text-xs font-black tracking-widest uppercase mb-4">Local Review</h5>
-                        <div class="relative bg-slate-900 p-6 rounded-2xl border-l-4 border-[#c5a059]">
-                          <div class="absolute -top-3 -left-1 text-[#c5a059] text-4xl opacity-20">"</div>
-                          <p class="text-slate-200 italic font-medium leading-relaxed">
-                            ${escapeHtml(selected.review || "")}
-                          </p>
-                          <div class="mt-4 flex items-center gap-2">
-                            <div class="flex gap-1">
-                              ${renderStars(selected.rating)}
-                            </div>
-                            <span class="text-xs text-slate-500 font-bold">Verified Resident Review</span>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div class="pt-4">
-                        <button
-                          data-action="close-modal"
-                          class="w-full py-5 bg-gradient-to-r from-[#c5a059] to-[#f3d38c] text-[#0a192f] font-black rounded-2xl shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all"
-                        >
-                          가이드 닫기
-                        </button>
-                      </div>
-                    </div>
+                  <div class="w-full py-4 rounded-xl bg-slate-800 group-hover:bg-[#c5a059] text-white group-hover:text-[#0a192f] font-black text-sm transition-all flex items-center justify-center gap-2">
+                    상세 가이드 보기
+                    <i data-lucide="chevron-right" style="width:18px;height:18px"></i>
                   </div>
                 </div>
               </div>
-              `
-              : ``
-          }
-
-          <!-- Footer -->
-          <footer class="bg-[#03070d] border-t border-slate-900 py-20 px-6">
-            <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-12">
-              <div class="text-center md:text-left space-y-4">
-                <h2 class="text-3xl font-black text-[#c5a059]">효원(曉原) 미식회</h2>
-                <p class="text-slate-500 max-w-md text-sm leading-relaxed font-medium">
-                  본 가이드는 부산대학교 학생들과 로컬 주민들의 생생한 리뷰를 바탕으로 큐레이션 되었습니다. 상업적 목적이 아닌 미식 정보 공유를 위해 제작되었습니다.
-                </p>
-              </div>
-
-              <div class="text-right">
-                <div class="flex items-center gap-2 text-slate-500 font-bold mb-4 justify-center md:justify-end">
-                  <i data-lucide="navigation" style="width:16px;height:16px"></i>
-                  <span>부산광역시 금정구 장전동 일대</span>
-                </div>
-                <p class="text-slate-600 text-xs">Curated by PNU Gourmet Society</p>
-              </div>
-            </div>
-
-            <div class="max-w-7xl mx-auto mt-20 pt-8 border-t border-slate-900 text-center text-slate-700 text-xs font-bold tracking-widest uppercase">
-              © 2026 Hyo-Won Gourmet Society. Elegance in every bite.
-            </div>
-          </footer>
-        </div>
-      `;
-
-      // Lucide 아이콘 렌더
-      lucide.createIcons();
-
-      // 검색 input 이벤트 바인딩
-      const input = document.getElementById("searchInput");
-      if (input) {
-        input.addEventListener("input", (e) => {
-          state.searchTerm = e.target.value;
-          render();
-        }, { passive: true });
+            `).join("")}
+          </div>
+        `;
         
-        // 포커스 유지
-        if (state.searchTerm) {
-          input.focus();
-          input.setSelectionRange(state.searchTerm.length, state.searchTerm.length);
-        }
+        // 카드 애니메이션 Trigger
+        setTimeout(() => {
+          document.querySelectorAll('.restaurant-card').forEach((el, idx) => {
+            setTimeout(() => el.classList.add('visible'), idx * 50);
+          });
+        }, 10);
       }
+      lucide.createIcons();
     }
 
-    // -----------------------------
-    // Events (event delegation)
-    // -----------------------------
-    document.addEventListener("click", (e) => {
-      const btn = e.target.closest("[data-action]");
-      if (!btn) return;
-
-      const action = btn.getAttribute("data-action");
-
-      if (action === "go-home") {
-        window.location.href = "index.html";
-        return;
-      }
-
-      if (action === "open-detail") {
-        const id = Number(btn.getAttribute("data-id"));
-        state.selectedId = Number.isFinite(id) ? id : null;
-        render();
-        return;
-      }
-
-      if (action === "close-modal") {
-        state.selectedId = null;
-        render();
-        return;
-      }
-
-      if (action === "open-map") {
-        const address = btn.getAttribute("data-address") || "";
-        const name = btn.getAttribute("data-name") || "";
-        handleOpenNaverMap(address, name);
-        return;
-      }
+    // 2. Search Event Listener
+    searchInput.addEventListener("input", (e) => {
+      const q = e.target.value.toLowerCase().trim();
+      const filtered = sortedData.filter(r => {
+        const inName = r.name.toLowerCase().includes(q);
+        const inType = r.type.toLowerCase().includes(q);
+        const inTags = (r.tags || []).some(t => t.toLowerCase().includes(q));
+        return inName || inType || inTags;
+      });
+      renderList(filtered);
     });
 
-    // ESC로 모달 닫기
+    // 3. Modal Functions
+    window.openDetail = function(id) {
+      const selected = restaurantsData.find(r => r.id === id);
+      if (!selected) return;
+
+      modalWrapper.innerHTML = `
+        <button
+          onclick="closeModal()"
+          class="absolute top-6 right-6 z-10 bg-black/50 p-2 rounded-full text-white hover:bg-[#c5a059] transition-colors"
+        >
+          <i data-lucide="x" style="width:24px;height:24px"></i>
+        </button>
+
+        <div class="flex flex-col md:flex-row">
+          <!-- Left: Image -->
+          <div class="md:w-1/2 h-64 md:h-auto relative">
+            <img src="${selected.image}" alt="${selected.name}" class="w-full h-full object-cover" />
+            <div class="absolute inset-0 bg-gradient-to-t from-[#0d1520] to-transparent"></div>
+            <div class="absolute bottom-6 left-6 right-6">
+              <span class="bg-[#c5a059] text-[#0a192f] text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest mb-2 inline-block">
+                ${selected.type}
+              </span>
+              <h2 class="text-3xl md:text-4xl font-black text-white">${selected.name}</h2>
+            </div>
+          </div>
+
+          <!-- Right: Content -->
+          <div class="md:w-1/2 p-8 md:p-12 space-y-8">
+            <div>
+              <h5 class="text-[#c5a059] text-xs font-black tracking-widest uppercase mb-4">Location & Guide</h5>
+              <div class="flex items-start gap-4 bg-slate-900/50 p-5 rounded-2xl border border-slate-800 group hover:border-[#c5a059]/30 transition-all">
+                <i data-lucide="map-pin" class="text-[#c5a059] shrink-0 mt-1" style="width:20px;height:20px"></i>
+                <div class="flex-1">
+                  <p class="text-white font-bold mb-1">${selected.address}</p>
+                  <button
+                    onclick="handleOpenNaverMap('${selected.address}', '${selected.name}')"
+                    class="text-[#00c73c] text-xs font-bold flex items-center gap-1 hover:underline"
+                  >
+                    네이버 지도에서 찾아가기
+                    <i data-lucide="external-link" style="width:12px;height:12px"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <h5 class="text-[#c5a059] text-xs font-black tracking-widest uppercase mb-4">Description</h5>
+              <p class="text-slate-300 leading-relaxed font-medium">${selected.description}</p>
+            </div>
+
+            <div>
+              <h5 class="text-[#c5a059] text-xs font-black tracking-widest uppercase mb-4">Local Review</h5>
+              <div class="relative bg-slate-900 p-6 rounded-2xl border-l-4 border-[#c5a059]">
+                <p class="text-slate-200 italic font-medium leading-relaxed">"${selected.review}"</p>
+                <div class="mt-4 flex items-center gap-2">
+                  <span class="text-xs text-slate-500 font-bold">Verified Resident Review</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="pt-4">
+              <button
+                onclick="closeModal()"
+                class="w-full py-5 bg-gradient-to-r from-[#c5a059] to-[#f3d38c] text-[#0a192f] font-black rounded-2xl shadow-xl hover:scale-[1.02] transition-all"
+              >
+                가이드 닫기
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+      lucide.createIcons();
+      modalOverlay.classList.remove("hidden");
+      modalOverlay.classList.add("flex");
+      document.body.style.overflow = 'hidden';
+    };
+
+    window.closeModal = function() {
+      modalOverlay.classList.add("hidden");
+      modalOverlay.classList.remove("flex");
+      document.body.style.overflow = 'auto';
+    };
+
+    function handleOpenNaverMap(address, name) {
+      const destination = encodeURIComponent(address);
+      const url = `https://map.naver.com/p/search/${destination}`;
+      window.open(url, "_blank");
+    }
+
+    // Initial Render
+    renderList(sortedData);
+
+    // ESC Close
     document.addEventListener("keydown", (e) => {
-      if (e.key === "Escape" && state.selectedId != null) {
-        state.selectedId = null;
-        render();
-      }
+      if (e.key === "Escape") closeModal();
     });
-
-    // Initial render
-    render();
   </script>
 </body>
 </html>
