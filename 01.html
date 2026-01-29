@@ -12,15 +12,15 @@
   <script src="https://unpkg.com/lucide@latest"></script>
 
   <style>
-    /* tailwind line-clamp 대체(간단 버전) */
-    .line-clamp-3{
+    /* tailwind line-clamp 대체 */
+    .line-clamp-3 {
       display: -webkit-box;
       -webkit-line-clamp: 3;
       -webkit-box-orient: vertical;
       overflow: hidden;
     }
     
-    /* Smooth transition for modal */
+    /* 모달 애니메이션 */
     .modal-enter {
       animation: fadeIn 0.3s ease-out;
     }
@@ -29,6 +29,7 @@
       to { opacity: 1; transform: scale(1); }
     }
 
+    /* 카드 애니메이션 및 호버 효과 */
     .restaurant-card {
       transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
       opacity: 0;
@@ -40,14 +41,30 @@
     }
     .restaurant-card:hover {
       transform: translateY(-8px);
-      box-shadow: 0 15px 35px -12px rgba(2, 12, 27, 0.8);
+      box-shadow: 0 15px 35px -12px rgba(197, 160, 89, 0.3);
+      border-color: rgba(197, 160, 89, 0.5);
+    }
+    
+    /* 스크롤바 커스텀 */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #050a12;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #1e293b;
+      border-radius: 10px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #c5a059;
     }
   </style>
 </head>
 
 <body class="min-h-screen bg-[#050a12] font-sans text-slate-200 selection:bg-[#c5a059] selection:text-[#0a192f]">
-  <div id="app">
-    <!-- 정적 레이아웃은 초기 로드 시 한 번만 그려집니다 -->
+  
+  <div id="app-layout">
     
     <!-- Navbar -->
     <nav class="sticky top-0 z-50 bg-[#0a192f]/90 backdrop-blur-md border-b border-[#c5a059]/20 px-6 py-4">
@@ -71,7 +88,7 @@
       </div>
     </nav>
 
-    <!-- Hero -->
+    <!-- Hero Section -->
     <header class="relative py-20 px-6 overflow-hidden">
       <div class="max-w-5xl mx-auto text-center relative z-10">
         <div class="flex justify-center mb-6">
@@ -119,7 +136,7 @@
         </div>
       </div>
 
-      <!-- 리스트가 렌더링 될 컨테이너 -->
+      <!-- Restaurant Grid -->
       <div id="restaurantGridContainer"></div>
     </main>
 
@@ -151,7 +168,7 @@
     <div id="modalOverlay" class="fixed inset-0 z-[100] hidden items-center justify-center p-4 md:p-8">
         <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" onclick="closeModal()"></div>
         <div id="modalContentWrapper" class="relative bg-[#0d1520] w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-[2.5rem] border border-[#c5a059]/30 shadow-2xl modal-enter">
-            <!-- Modal Content Injected Here -->
+            <!-- Modal Content Injected via JS -->
         </div>
     </div>
   </div>
@@ -166,38 +183,38 @@
       { id: 3, name: "뉴숯불통닭 본점", type: "치킨", menu: "가마솥 후라이드", rating: 4.7, address: "부산 금정구 구서로 7", description: "부산 3대 통닭. 카레향 베이스의 바삭한 가마솥 치킨.", tags: ["노포", "카레향"], review: "바삭함의 끝판왕입니다. 카레향이 신의 한 수예요.", image: "https://images.unsplash.com/photo-1562967914-6c82c6c2a795?auto=format&fit=crop&q=80&w=800" },
       { id: 4, name: "수림식당 본점", type: "중식/면", menu: "가지만두, 탄탄면", rating: 4.6, address: "부산 금정구 금샘로 7", description: "가지만두 신드롬의 주인공. 탄탄면과의 조합이 일품.", tags: ["가지만두", "탄탄면"], review: "가지만두는 무조건 드셔야 합니다. 육즙이 팡팡 터져요.", image: "https://images.unsplash.com/photo-1585032226651-759b368d7246?auto=format&fit=crop&q=80&w=800" },
       { id: 5, name: "서문국수", type: "국수", menu: "비빔국수, 감태주먹밥", rating: 4.6, address: "부산 금정구 장전온천천로 51", description: "부산대역 1번 출구 가성비 끝판왕. 신선한 채소와 감태의 만남.", tags: ["가성비", "감태주먹밥"], review: "야외 평상에서 먹는 국수 맛이 최고입니다. 감태주먹밥 필수!", image: "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&q=80&w=800" },
-      { id: 6, name: "에타리", type: "디저트/타르트", rating: 4.6, address: "부산 금정구 장전온천천로 73", description: "에그타르트 성지. 바삭한 파이지와 부드러운 필링.", tags: ["에그타르트", "웨이팅"], review: "포르투갈에서 먹었던 맛보다 맛있어요. 선물용으로도 최고.", image: "https://images.unsplash.com/photo-1509365465985-25d11c17e812?auto=format&fit=crop&q=80&w=800" },
+      { id: 6, name: "에타리", type: "디저트/타르트", menu: "에그타르트", rating: 4.6, address: "부산 금정구 장전온천천로 73", description: "에그타르트 성지. 바삭한 파이지와 부드러운 필링.", tags: ["에그타르트", "웨이팅"], review: "포르투갈에서 먹었던 맛보다 맛있어요. 선물용으로도 최고.", image: "https://images.unsplash.com/photo-1509365465985-25d11c17e812?auto=format&fit=crop&q=80&w=800" },
       { id: 7, name: "구본", type: "돈카츠", menu: "특등심 돈카츠", rating: 4.6, address: "부산 금정구 부산대학로64번길 6", description: "톤쇼우와는 또 다른 매력의 프리미엄 카츠. 육향이 진함.", tags: ["프리미엄", "육향"], review: "고기 본연의 맛을 가장 잘 살린 돈카츠 집입니다.", image: "https://images.unsplash.com/photo-1591814468924-cafb5d1232e1?auto=format&fit=crop&q=80&w=800" },
       { id: 8, name: "도야지면옥", type: "국수/국밥", menu: "고기국수, 돔베수육", rating: 4.5, address: "부산 금정구 장전온천천로 39", description: "진한 사골 육수의 국수와 마늘 순대가 별미인 곳.", tags: ["든든함", "마늘순대"], review: "마늘순대가 정말 특이하고 맛있어요. 국물도 아주 진합니다.", image: "https://images.unsplash.com/photo-1547592166-23ac45744acd?auto=format&fit=crop&q=80&w=800" },
       { id: 9, name: "카오카무", type: "태국음식", menu: "족발밥(카오카무)", rating: 4.5, address: "부산 금정구 장전온천천로83번길 9", description: "야들야들한 족발과 공심채 볶음으로 태국 현지의 맛을 재현.", tags: ["족발밥", "태국현지맛"], review: "방콕에서 먹던 족발밥 맛 그대로네요. 너무 부드러워요.", image: "https://images.unsplash.com/photo-1562967962-ccd36709849c?auto=format&fit=crop&q=80&w=800" },
       { id: 10, name: "코하루", type: "라멘", menu: "하카타 돈코츠라멘", rating: 4.5, address: "부산 금정구 부산대학로38번길 16", description: "진하고 구수한 국물의 돈코츠 라멘 전문점. 차슈가 일품.", tags: ["라멘", "차슈맛집"], review: "부산대 라멘 하면 코하루죠. 차슈 추가는 선택이 아닌 필수.", image: "https://images.unsplash.com/photo-1552611052-33e04de081de?auto=format&fit=crop&q=80&w=800" },
       { id: 11, name: "라라관", type: "사천요리", menu: "마라훠궈전골", rating: 4.5, address: "부산 금정구 부산대학로 49-1", description: "부산 마라 열풍의 근원지. 얼얼한 사천식 화끈한 맛.", tags: ["마라탕", "사천식"], review: "진짜 마라를 느끼고 싶다면 여기로 오세요. 중독성 대박.", image: "https://images.unsplash.com/photo-1555126634-323283e090fa?auto=format&fit=crop&q=80&w=800" },
       { id: 12, name: "비비비 (BBB)", type: "버거", menu: "수제버거", rating: 4.5, address: "부산 금정구 장전온천천로 77", description: "육즙 가득한 패티와 직접 구운 번의 조화가 환상적.", tags: ["수제버거", "힙한분위기"], review: "번이 정말 쫄깃하고 패티 육즙이 장난 아닙니다.", image: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&q=80&w=800" },
-      { id: 13, name: "자마미등갈비", type: "등갈비", rating: 4.5, address: "부산 금정구 금강로 248-5", description: "숙성된 등갈비 구이. 매콤 달콤한 양념이 매력적.", tags: ["등갈비", "술안주"], review: "양념이 정말 맛있어서 밥까지 비벼 먹게 됩니다.", image: "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&q=80&w=800" },
+      { id: 13, name: "자마미등갈비", type: "등갈비", menu: "숙성 등갈비", rating: 4.5, address: "부산 금정구 금강로 248-5", description: "숙성된 등갈비 구이. 매콤 달콤한 양념이 매력적.", tags: ["등갈비", "술안주"], review: "양념이 정말 맛있어서 밥까지 비벼 먹게 됩니다.", image: "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&q=80&w=800" },
       { id: 14, name: "텐동코하루", type: "텐동", menu: "모듬 텐동", rating: 4.5, address: "부산 금정구 장전온천천로 43", description: "라멘 맛집 코하루에서 운영하는 텐동집. 튀김 퀄리티 보장.", tags: ["텐동", "바삭튀김"], review: "튀김옷이 얇고 정말 바삭해요. 소스가 짜지 않아 좋습니다.", image: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&q=80&w=800" },
       { id: 15, name: "해쉬 (Hash)", type: "양식", menu: "목살 플레이트", rating: 4.4, address: "부산 금정구 금강로 248-11", description: "넉넉한 양과 활기찬 분위기. 학생들에게 사랑받는 양식당.", tags: ["목살플레이트", "대학가감성"], review: "목살 플레이트 구성이 너무 알차요. 치즈 크래커도 꿀맛.", image: "https://images.unsplash.com/photo-1558030006-45c2550da83c?auto=format&fit=crop&q=80&w=800" },
       { id: 16, name: "나오리쇼쿠", type: "일식가정식", menu: "오차즈케", rating: 4.4, address: "부산 금정구 금강로 271-14", description: "정갈한 일본식 오차즈케 한 상. 깔끔한 혼밥으로도 추천.", tags: ["오차즈케", "혼밥추천"], review: "깔끔하게 한 끼 먹기 가장 좋은 곳입니다. 가라아게도 맛있어요.", image: "https://images.unsplash.com/photo-1553621042-f6e147245754?auto=format&fit=crop&q=80&w=800" },
       { id: 17, name: "부산댁", type: "고기집", menu: "구워주는 삼겹살", rating: 4.4, address: "부산 금정구 부산대학로50번길 12", description: "전문가가 구워서 내어주는 편안하고 맛있는 고기집.", tags: ["구워주는집", "회식추천"], review: "구워져서 나오니까 먹기만 하면 돼서 너무 편해요. 고기 질도 굿.", image: "https://images.unsplash.com/photo-1606416132922-309495729e1f?auto=format&fit=crop&q=80&w=800" },
       { id: 18, name: "카메", type: "일식당", menu: "사케동, 덮밥", rating: 4.4, address: "부산 금정구 금강로 271-4", description: "신선한 연어 덮밥과 정성 가득한 일식 덮밥 전문점.", tags: ["사케동", "연어"], review: "연어가 정말 두툼하고 신선합니다. 간장 소스도 짜지 않아요.", image: "https://images.unsplash.com/photo-1579584425555-c3ce17fd3b11?auto=format&fit=crop&q=80&w=800" },
       { id: 19, name: "야마벤또", type: "벤또", menu: "도리벤또", rating: 4.4, address: "부산 금정구 금강로 256", description: "푸짐한 구성의 일본식 도시락. 갓 튀긴 튀김들이 포인트.", tags: ["벤또", "푸짐함"], review: "대학생 때부터 가던 단골집. 양이 정말 푸짐해서 좋아요.", image: "https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&q=80&w=800" },
-      { id: 20, name: "팔팔탕수육", type: "탕수육전문", rating: 4.4, address: "부산 금정구 부산대학로63번길 21", description: "탕수육 하나로 승부하는 집. 바삭한 식감이 일품.", tags: ["탕수육", "바삭함"], review: "탕수육 전문점답게 튀김 공력이 대단합니다. 가성비 최고.", image: "https://images.unsplash.com/photo-1525755662778-989d0524087e?auto=format&fit=crop&q=80&w=800" },
+      { id: 20, name: "팔팔탕수육", type: "탕수육전문", menu: "고기 탕수육", rating: 4.4, address: "부산 금정구 부산대학로63번길 21", description: "탕수육 하나로 승부하는 집. 바삭한 식감이 일품.", tags: ["탕수육", "바삭함"], review: "탕수육 전문점답게 튀김 공력이 대단합니다. 가성비 최고.", image: "https://images.unsplash.com/photo-1525755662778-989d0524087e?auto=format&fit=crop&q=80&w=800" },
       { id: 21, name: "식보 (SIKBO)", type: "아시안퓨전", menu: "덮밥류", rating: 4.4, address: "부산 금정구 부산대학로 34-1", description: "트렌디한 인테리어와 깔끔한 아시안 퓨전 덮밥 전문점.", tags: ["트렌디", "인스타감성"], review: "가게가 너무 힙하고 음식 플레이팅도 예뻐서 사진 찍기 좋아요.", image: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&q=80&w=800" },
       { id: 22, name: "델라고", type: "이탈리안", menu: "빠네 파스타", rating: 4.3, address: "부산 금정구 부산대학로 64", description: "부산대 정문 앞 터줏대감. 스테디셀러 파스타와 화덕피자.", tags: ["스테디셀러", "정문앞"], review: "빠네 파스타는 언제 먹어도 맛있네요. 정문 앞이라 가기도 편해요.", image: "https://images.unsplash.com/photo-1572441713132-c542fc4fe282?auto=format&fit=crop&q=80&w=800" },
-      { id: 23, name: "설봉돼지국밥", type: "돼지국밥", rating: 4.3, address: "부산 금정구 금정로 94", description: "잡내 없이 깔끔하고 진한 육수. 부산대 로컬들의 국밥 픽.", tags: ["해장", "로컬푸드"], review: "국물이 정말 깔끔합니다. 깍두기와의 조합이 예술이에요.", image: "https://images.unsplash.com/photo-1628160301413-2196656ca8a1?auto=format&fit=crop&q=80&w=800" },
+      { id: 23, name: "설봉돼지국밥", type: "돼지국밥", menu: "따로 국밥", rating: 4.3, address: "부산 금정구 금정로 94", description: "잡내 없이 깔끔하고 진한 육수. 부산대 로컬들의 국밥 픽.", tags: ["해장", "로컬푸드"], review: "국물이 정말 깔끔합니다. 깍두기와의 조합이 예술이에요.", image: "https://images.unsplash.com/photo-1628160301413-2196656ca8a1?auto=format&fit=crop&q=80&w=800" },
       { id: 24, name: "우마이도", type: "라멘", menu: "돈코츠 라멘", rating: 4.3, address: "부산 금정구 금강로 247-5", description: "오랜 시간 자리를 지켜온 정통 하카타 식 라멘 맛집.", tags: ["정통파", "자가제면"], review: "면발의 식감이 아주 좋습니다. 정통 라멘을 원한다면 여기.", image: "https://images.unsplash.com/photo-1591814468924-cafb5d1232e1?auto=format&fit=crop&q=80&w=800" },
       { id: 25, name: "안다미로", type: "이탈리안", menu: "파스타", rating: 4.3, address: "부산 금정구 금강로279번길 8", description: "아늑한 분위기에서 즐기는 정성 가득한 파스타와 리조또.", tags: ["아늑함", "정성"], review: "사장님이 정말 친절하시고 파스타 소스가 아주 진해요.", image: "https://images.unsplash.com/photo-1551183053-bf91a1d81141?auto=format&fit=crop&q=80&w=800" },
       { id: 26, name: "퍼스트부엌", type: "퓨전레스토랑", menu: "태국식 커리, 파스타", rating: 4.2, address: "부산 금정구 장전온천천로 113", description: "동남아와 이탈리안의 조화. 독특하고 세련된 메뉴 구성.", tags: ["퓨전", "색다른맛"], review: "똠얌꿍 파스타처럼 신선한 메뉴가 많아서 좋아요.", image: "https://images.unsplash.com/photo-1559847844-5315695dadae?auto=format&fit=crop&q=80&w=800" },
-      { id: 27, name: "신창국밥", type: "돼지국밥", rating: 4.2, address: "부산 금정구 부산대학로 50", description: "맑은 국물 스타일의 돼지국밥. 담백한 맛을 선호한다면 추천.", tags: ["맑은국물", "담백"], review: "맑은 국물이라 먹고 나서 속이 정말 편안합니다.", image: "https://images.unsplash.com/photo-1628160301413-2196656ca8a1?auto=format&fit=crop&q=80&w=800" },
-      { id: 28, name: "곁집", type: "비빔밥/찌개", rating: 4.2, address: "부산 금정구 장전온천천로 51", description: "돌솥비빔밥과 김치찌개의 정겨운 한 상 차림.", tags: ["한식", "돌솥밥"], review: "든든하게 한식 먹고 싶을 때 가장 먼저 생각나는 곳.", image: "https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&fit=crop&q=80&w=800" },
+      { id: 27, name: "신창국밥", type: "돼지국밥", menu: "부산식 돼지국밥", rating: 4.2, address: "부산 금정구 부산대학로 50", description: "맑은 국물 스타일의 돼지국밥. 담백한 맛을 선호한다면 추천.", tags: ["맑은국물", "담백"], review: "맑은 국물이라 먹고 나서 속이 정말 편안합니다.", image: "https://images.unsplash.com/photo-1628160301413-2196656ca8a1?auto=format&fit=crop&q=80&w=800" },
+      { id: 28, name: "곁집", type: "비빔밥/찌개", menu: "비빔밥 정식", rating: 4.2, address: "부산 금정구 장전온천천로 51", description: "돌솥비빔밥과 김치찌개의 정겨운 한 상 차림.", tags: ["한식", "돌솥밥"], review: "든든하게 한식 먹고 싶을 때 가장 먼저 생각나는 곳.", image: "https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&fit=crop&q=80&w=800" },
       { id: 29, name: "샤오시안", type: "중식", menu: "탕수육, 짬뽕", rating: 4.1, address: "부산 금정구 부산대학로50번길 16", description: "가성비 좋은 중식당. 저렴한 가격에 요리를 즐길 수 있는 곳.", tags: ["가성비중식", "요리맛집"], review: "짬뽕 국물이 시원하고 탕수육 가격이 정말 착합니다.", image: "https://images.unsplash.com/photo-1525755662778-989d0524087e?auto=format&fit=crop&q=80&w=800" },
-      { id: 30, name: "모모스테이크", type: "스테이크", rating: 4.0, address: "부산 금정구 부산대학로 38", description: "젓가락으로 먹는 스테이크. 학생들의 꾸준한 사랑.", tags: ["가성비", "간편식"], review: "스테이크를 부담 없는 가격에 먹을 수 있어서 좋아요.", image: "https://images.unsplash.com/photo-1546241072-48010ad28c2c?auto=format&fit=crop&q=80&w=800" }
+      { id: 30, name: "모모스테이크", type: "스테이크", menu: "스테이크 정식", rating: 4.0, address: "부산 금정구 부산대학로 38", description: "젓가락으로 먹는 스테이크. 학생들의 꾸준한 사랑.", tags: ["가성비", "간편식"], review: "스테이크를 부담 없는 가격에 먹을 수 있어서 좋아요.", image: "https://images.unsplash.com/photo-1546241072-48010ad28c2c?auto=format&fit=crop&q=80&w=800" }
     ];
 
     // 평점 내림차순 정렬
     const sortedData = [...restaurantsData].sort((a, b) => b.rating - a.rating);
 
     // -----------------------------
-    // App Logic (Search Fix)
+    // App Logic
     // -----------------------------
     const gridEl = document.getElementById("restaurantGridContainer");
     const countEl = document.getElementById("resultCount");
@@ -205,7 +222,7 @@
     const modalOverlay = document.getElementById("modalOverlay");
     const modalWrapper = document.getElementById("modalContentWrapper");
 
-    // 1. Render Function (Updates only the grid part)
+    // 1. Render Function
     function renderList(list) {
       if (countEl) countEl.innerText = list.length;
 
@@ -222,10 +239,10 @@
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             ${list.map((res, index) => `
               <div
-                class="restaurant-card bg-[#0d1520] rounded-[2rem] p-8 border border-slate-800 hover:border-[#c5a059]/50 flex flex-col cursor-pointer group"
+                class="restaurant-card bg-[#0d1520] rounded-[2rem] p-8 border border-slate-800 flex flex-col cursor-pointer group"
                 onclick="openDetail(${res.id})"
               >
-                <!-- Ranking Badge -->
+                <!-- Ranking Badge & Rating -->
                 <div class="relative w-full mb-6 flex justify-between items-start">
                    <div class="bg-gradient-to-br from-[#c5a059] to-[#f3d38c] w-10 h-10 rounded-xl flex items-center justify-center font-black text-[#0a192f] shadow-lg">
                      ${index + 1}
@@ -267,26 +284,27 @@
               </div>
             `).join("")}
           </div>
-        `;
+        `;        
         
-        // 카드 애니메이션 Trigger
+        // 카드 순차적 표시 애니메이션
         setTimeout(() => {
           document.querySelectorAll('.restaurant-card').forEach((el, idx) => {
             setTimeout(() => el.classList.add('visible'), idx * 50);
           });
-        }, 10);
+        }, 50);
       }
       lucide.createIcons();
     }
 
-    // 2. Search Event Listener
+    // 2. Search Logic
     searchInput.addEventListener("input", (e) => {
       const q = e.target.value.toLowerCase().trim();
       const filtered = sortedData.filter(r => {
         const inName = r.name.toLowerCase().includes(q);
         const inType = r.type.toLowerCase().includes(q);
         const inTags = (r.tags || []).some(t => t.toLowerCase().includes(q));
-        return inName || inType || inTags;
+        const inMenu = (r.menu || "").toLowerCase().includes(q);
+        return inName || inType || inTags || inMenu;
       });
       renderList(filtered);
     });
@@ -299,7 +317,7 @@
       modalWrapper.innerHTML = `
         <button
           onclick="closeModal()"
-          class="absolute top-6 right-6 z-10 bg-black/50 p-2 rounded-full text-white hover:bg-[#c5a059] transition-colors"
+          class="absolute top-6 right-6 z-20 bg-black/50 p-2 rounded-full text-white hover:bg-[#c5a059] transition-colors"
         >
           <i data-lucide="x" style="width:24px;height:24px"></i>
         </button>
@@ -308,7 +326,7 @@
           <!-- Left: Image -->
           <div class="md:w-1/2 h-64 md:h-auto relative">
             <img src="${selected.image}" alt="${selected.name}" class="w-full h-full object-cover" />
-            <div class="absolute inset-0 bg-gradient-to-t from-[#0d1520] to-transparent"></div>
+            <div class="absolute inset-0 bg-gradient-to-t from-[#0d1520] via-transparent to-transparent"></div>
             <div class="absolute bottom-6 left-6 right-6">
               <span class="bg-[#c5a059] text-[#0a192f] text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest mb-2 inline-block">
                 ${selected.type}
@@ -339,6 +357,10 @@
             <div>
               <h5 class="text-[#c5a059] text-xs font-black tracking-widest uppercase mb-4">Description</h5>
               <p class="text-slate-300 leading-relaxed font-medium">${selected.description}</p>
+              <div class="mt-4 flex items-center gap-2 text-sm text-slate-400">
+                <i data-lucide="utensils-crossioned" style="width:14px;height:14px"></i>
+                <span>대표메뉴: <span class="text-white font-bold">${selected.menu}</span></span>
+              </div>
             </div>
 
             <div>
@@ -346,6 +368,9 @@
               <div class="relative bg-slate-900 p-6 rounded-2xl border-l-4 border-[#c5a059]">
                 <p class="text-slate-200 italic font-medium leading-relaxed">"${selected.review}"</p>
                 <div class="mt-4 flex items-center gap-2">
+                  <div class="w-6 h-6 rounded-full bg-slate-700 flex items-center justify-center">
+                    <i data-lucide="user" class="text-slate-400" style="width:12px;height:12px"></i>
+                  </div>
                   <span class="text-xs text-slate-500 font-bold">Verified Resident Review</span>
                 </div>
               </div>
@@ -354,7 +379,7 @@
             <div class="pt-4">
               <button
                 onclick="closeModal()"
-                class="w-full py-5 bg-gradient-to-r from-[#c5a059] to-[#f3d38c] text-[#0a192f] font-black rounded-2xl shadow-xl hover:scale-[1.02] transition-all"
+                class="w-full py-5 bg-gradient-to-r from-[#c5a059] to-[#f3d38c] text-[#0a192f] font-black rounded-2xl shadow-xl hover:shadow-[#c5a059]/20 hover:scale-[1.02] transition-all"
               >
                 가이드 닫기
               </button>
@@ -374,19 +399,19 @@
       document.body.style.overflow = 'auto';
     };
 
-    function handleOpenNaverMap(address, name) {
-      const destination = encodeURIComponent(address);
+    window.handleOpenNaverMap = function(address, name) {
+      const destination = encodeURIComponent(address + " " + name);
       const url = `https://map.naver.com/p/search/${destination}`;
       window.open(url, "_blank");
     }
 
-    // Initial Render
-    renderList(sortedData);
-
-    // ESC Close
+    // ESC Key to close modal
     document.addEventListener("keydown", (e) => {
       if (e.key === "Escape") closeModal();
     });
+
+    // Initial Render
+    renderList(sortedData);
   </script>
 </body>
 </html>
