@@ -69,7 +69,7 @@
     <!-- Navbar -->
     <nav class="sticky top-0 z-50 bg-[#0a192f]/90 backdrop-blur-md border-b border-[#c5a059]/20 px-6 py-4">
       <div class="max-w-7xl mx-auto flex justify-between items-center">
-        <div class="flex items-center gap-3 cursor-pointer" onclick="window.location.reload()">
+        <div class="flex items-center gap-3 cursor-pointer" onclick="window.location.href='index.html'">
           <div class="bg-[#c5a059] p-1.5 rounded-lg shadow-[0_0_15px_rgba(197,160,89,0.3)]">
             <i data-lucide="award" class="text-[#0a192f]" style="width:24px;height:24px"></i>
           </div>
@@ -79,7 +79,7 @@
         </div>
 
         <button
-          onclick="window.location.reload()"
+          onclick="window.location.href='index.html'"
           class="group flex items-center gap-2 bg-slate-800/50 hover:bg-[#c5a059] transition-all px-4 py-2 rounded-full border border-slate-700 hover:border-[#c5a059]"
         >
           <i data-lucide="home" class="group-hover:text-[#0a192f]" style="width:18px;height:18px"></i>
@@ -210,19 +210,14 @@
       { id: 30, name: "모모스테이크", type: "스테이크", menu: "스테이크 정식", rating: 4.0, address: "부산 금정구 부산대학로 38", description: "젓가락으로 먹는 스테이크. 학생들의 꾸준한 사랑.", tags: ["가성비", "간편식"], review: "스테이크를 부담 없는 가격에 먹을 수 있어서 좋아요.", image: "https://images.unsplash.com/photo-1546241072-48010ad28c2c?auto=format&fit=crop&q=80&w=800" }
     ];
 
-    // 평점 내림차순 정렬
     const sortedData = [...restaurantsData].sort((a, b) => b.rating - a.rating);
 
-    // -----------------------------
-    // App Logic
-    // -----------------------------
     const gridEl = document.getElementById("restaurantGridContainer");
     const countEl = document.getElementById("resultCount");
     const searchInput = document.getElementById("searchInput");
     const modalOverlay = document.getElementById("modalOverlay");
     const modalWrapper = document.getElementById("modalContentWrapper");
 
-    // 1. Render Function
     function renderList(list) {
       if (countEl) countEl.innerText = list.length;
 
@@ -242,7 +237,6 @@
                 class="restaurant-card bg-[#0d1520] rounded-[2rem] p-8 border border-slate-800 flex flex-col cursor-pointer group"
                 onclick="openDetail(${res.id})"
               >
-                <!-- Ranking Badge & Rating -->
                 <div class="relative w-full mb-6 flex justify-between items-start">
                    <div class="bg-gradient-to-br from-[#c5a059] to-[#f3d38c] w-10 h-10 rounded-xl flex items-center justify-center font-black text-[#0a192f] shadow-lg">
                      ${index + 1}
@@ -286,7 +280,6 @@
           </div>
         `;        
         
-        // 카드 순차적 표시 애니메이션
         setTimeout(() => {
           document.querySelectorAll('.restaurant-card').forEach((el, idx) => {
             setTimeout(() => el.classList.add('visible'), idx * 50);
@@ -296,7 +289,6 @@
       lucide.createIcons();
     }
 
-    // 2. Search Logic
     searchInput.addEventListener("input", (e) => {
       const q = e.target.value.toLowerCase().trim();
       const filtered = sortedData.filter(r => {
@@ -309,7 +301,6 @@
       renderList(filtered);
     });
 
-    // 3. Modal Functions
     window.openDetail = function(id) {
       const selected = restaurantsData.find(r => r.id === id);
       if (!selected) return;
@@ -323,7 +314,6 @@
         </button>
 
         <div class="flex flex-col md:flex-row">
-          <!-- Left: Image -->
           <div class="md:w-1/2 h-64 md:h-auto relative">
             <img src="${selected.image}" alt="${selected.name}" class="w-full h-full object-cover" />
             <div class="absolute inset-0 bg-gradient-to-t from-[#0d1520] via-transparent to-transparent"></div>
@@ -335,7 +325,6 @@
             </div>
           </div>
 
-          <!-- Right: Content -->
           <div class="md:w-1/2 p-8 md:p-12 space-y-8">
             <div>
               <h5 class="text-[#c5a059] text-xs font-black tracking-widest uppercase mb-4">Location & Guide</h5>
@@ -405,12 +394,10 @@
       window.open(url, "_blank");
     }
 
-    // ESC Key to close modal
     document.addEventListener("keydown", (e) => {
       if (e.key === "Escape") closeModal();
     });
 
-    // Initial Render
     renderList(sortedData);
   </script>
 </body>
